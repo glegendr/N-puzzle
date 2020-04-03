@@ -5,7 +5,7 @@ import System.IO
 import System.Environment
 import Data.List
 import Data.Char
-
+import Srcs.Grill (Grill)
 
 deleteComment :: [String] -> [String]
 deleteComment [] = []
@@ -51,13 +51,12 @@ checkOrdered (x:xs) bef
     | x == bef + 1 = checkOrdered xs x
     | otherwise = error $ "Wrong symbol founded: " ++ show x
 
-parse :: IO [[Int]]
-parse =  do
-    (file:_) <- getArgs
+parse :: String -> IO (Int, Grill)
+parse file =  do
     content <- readFile file
     let grill = deleteComment $ lines content
     checkAlpha grill
     checkSize $ map words grill
     checkDuplicate $ words $ unlines grill
     checkOrdered (sort $ map (\x -> read x ::Int) $ tail $ words $ unlines grill) (-1)
-    return $ map (map (\x -> read x ::Int)) $ tail $ map words grill
+    return (read (head grill)::Int, map (map (\x -> read x ::Int)) $ tail $ map words grill)

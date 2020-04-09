@@ -8,10 +8,7 @@ main = do
     then error "No map provided" 
     else return ()
     checkFlags args
-    ((size, grill), (size2, res), hs) <- leakser args
-    if size /= size2
-    then error "Not same size between given map and result map"
-    else return ()
+    (grill, res, hs) <- leakser args
     printGrill grill
     print $ hs grill
     putStrLn "--------------"

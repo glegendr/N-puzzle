@@ -12,8 +12,8 @@ manathan (x:xs) = (head x, 0) : manathan xs
 
 un :: Grill -> [(Int, Int)]
 un [] = []
-un (x:xs) = (head x, 0) : un xs
+un (x:xs) = (head x, 1) : un xs
 
 deux:: Grill -> [(Int, Int)]
 deux [] = []
-deux (x:xs) = (head x, 0) : deux xs
+deux (x:xs) = (head x, 2) : deux xs

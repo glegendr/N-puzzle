@@ -49,11 +49,13 @@ getFFlag (x:xs)
     | otherwise = getFFlag xs
     where eq = splitOn "=" x
 
-leakser :: [String] -> IO ((Int, Grill), (Int, Grill), (Grill -> [(Int, Int)]))
+leakser :: [String] -> IO (Grill, Grill, (Grill -> [(Int, Int)]))
 leakser lst = do
     (size, m) <- getMFlag lst
-    r <- getRFlag lst size
-    return ((size, m), r, getFFlag lst)
+    (size2, r) <- getRFlag lst size
+    if size /= size2
+    then  error "Not same size between given map and result map"
+    else return (m, r, getFFlag lst)
  
 helper :: IO ()
 helper = do
@@ -91,4 +93,3 @@ dispatch x
     | str == "2" = deux
     | otherwise = error $ "action \"" ++ x ++ "\" not found"
     where str = map toLower x
-

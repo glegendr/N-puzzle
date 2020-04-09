@@ -1,19 +1,18 @@
 module Srcs.Heuristic
 ( manathan
 , un
-, deux
+, dijkstra
 )where
 
 import Srcs.Grill (Grill)
 
-manathan :: Grill -> [(Int, Int)]
-manathan [] = []
-manathan (x:xs) = (head x, 0) : manathan xs
+manathan :: Grill -> Int
+manathan [] = 0
+manathan (x:xs) = 0
 
-un :: Grill -> [(Int, Int)]
-un [] = []
-un (x:xs) = (head x, 1) : un xs
+un :: Grill -> Int
+un [] = 0
+un (x:xs) = 0
 
-deux:: Grill -> [(Int, Int)]
-deux [] = []
-deux (x:xs) = (head x, 2) : deux xs
+dijkstra:: Grill -> Int
+dijkstra _ = 0

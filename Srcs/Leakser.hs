@@ -9,7 +9,11 @@ import System.Exit
 import Data.List.Split
 import Data.Char
 
-flags = [("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve"), ("-r", "--result", "<map>\t\t   Allow you to give a result map"), ("-f", "--function", "<function name>\t   Allow you to change your heuristic function"), ("-h", "--help", "\t\t\t   Display this message")]
+flags = [
+    ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
+    ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
+    ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <euclidean> <dijkstra>")
+    ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
 getMFlag [] = error "No map provided"
@@ -37,7 +41,7 @@ getRFlag (x:xs) size
     where eq = splitOn "=" x
 
 getFFlag :: [String] -> Heuristic
-getFFlag [] = manathan
+getFFlag [] = manhattan
 getFFlag (x:x1:xs)
     | x == "-f" || x == "--function" = dispatch x1
     | head eq == "-f" || head eq == "--function" = dispatch $ last eq
@@ -86,10 +90,10 @@ checkFlags (x:xs)
 
 
 dispatch :: String -> Heuristic
-dispatch [] = manathan
+dispatch [] = manhattan
 dispatch x
-    | str == "manathan" = manathan
-    | str == "1" = un
+    | str == "manhattan" = manhattan
+    | str == "euclidean" = euclidean
     | str == "dijkstra" = dijkstra
     | otherwise = error $ "action \"" ++ x ++ "\" not found"
     where str = map toLower x

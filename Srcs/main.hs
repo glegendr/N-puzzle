@@ -1,13 +1,16 @@
 import System.Environment
 import Srcs.Grill
 import Srcs.Leakser
--- import Data.BloomFilter as Bf
--- import Data.BloomFilter.Hash as Bfh
-import Data.List
+import Data.BloomFilter as Bf
+import Data.BloomFilter.Hash as Bfh
+import Data.BloomFilter.Easy
+import Data.List as Dl
 import Debug.Trace
+import Data.HashMap as Hm
+import Data.Heap.Binary as Bh
 -- import Data.HashSet
 
-type Child = (Grill, Int, Int)
+type Child = (Int, Grill, Int)
 
 main = do
     args <- getArgs
@@ -18,7 +21,10 @@ main = do
     (grill, res, hs) <- leakser args
     printGrill grill
     putStrLn "--------------"
- --   let x = Bf.fromList (Bfh.cheapHashes 1) 666 [grilltostring grill]
+   -- let x = Bf.singleton (Bfh.hash32 1) 1024 grill
+   --  let permuL = length $ permutations $ foldl1 (++) grill
+   --      (size, numHashes) = suggestSizing permuL 0.001
+   --  (Bf.singleton (Bfh.cheapHashes numHashes) size (show grill))
     -- print $ (grilltostring res) `Bf.elem` x
     -- let y = Bf.insertList [grilltostring res] x
     -- print $ (grilltostring res) `Bf.elem` y
@@ -26,6 +32,14 @@ main = do
     printGrill res
     putStrLn "--------------"
     printGrill $ aStar grill res hs
+
+-- conservative, aggressive :: Double -> [B.ByteString] -> BF.Bloom B.ByteString
+-- conservative = easyList
+-- 
+-- aggressive fpr xs
+-- let (size, numHashes) = suggestSizing (length xs) fpr
+--           k = 3
+--       in BF.fromList (cheapHashes (numHashes - k)) (size * k) xs
 
 
 
@@ -40,27 +54,33 @@ main = do
 aStar :: Grill -> Grill -> (Grill -> Int) -> Grill
 aStar grill res hs =
     let --closeList = Bf.fromList (Bfh.cheapHashes 1) 666 [grillToString grill]
-        closeList = []
-        openList = [(grill, 0, 0)]
+        -- closeList = []
+        closeList = Hm.singleton grill 0
+        openList = Bh.singleton (0, grill, 0)
     in aStarBis closeList openList res hs
 
 -- 125870
 -- 11866
 
-aStarBis :: [Grill]-> [Child] -> Grill -> (Grill -> Int) -> Grill
-aStarBis _ [] _ _ = []
-aStarBis closeList ((grill, cost, heur):xs) res hs
+aStarBis :: Map Grill Int -> BinaryHeap Child -> Grill -> (Grill -> Int) -> Grill
+aStarBis _ Leaf _ _ = []
+aStarBis closeList openList res hs
     | grill == res = grill
-    | otherwise = aStarBis (grill : closeList) (sortOn (\(_, _, h) -> h) ((calcHs hs $ tailR closeList xs cost $ createChildren grill) ++ xs)) res hs
+    | otherwise = aStarBis (Hm.insert grill 0 closeList) (Bh.merge (calcHs hs $ tailR closeList xs cost $ createChildren grill) xs) res hs
     where 
-        tailR :: [Grill]-> [Child] -> Int -> [Grill] -> [Child]
-        tailR _ _ _ [] = []
+        (heur, grill, cost) = Bh.head openList
+        xs = Bh.tail openList
+        tailR :: Map Grill Int -> BinaryHeap Child -> Int -> [Grill] -> BinaryHeap Child
+        tailR _ _ _ [] = Leaf
         tailR closeList openList cost (x:xs)
-            | x `elem` closeList || any (\(x, y, _) -> x == grill && y <= cost) openList = tailR closeList openList cost xs
-            | otherwise = (x, cost + 1, 0) : tailR closeList openList cost xs
-        calcHs :: (Grill -> Int) -> [Child] -> [Child]
-        calcHs _ [] = []
-        calcHs hs ((grill, cost, heur):xs) = (grill, cost, cost + (hs grill)) : calcHs hs xs
+            | member x closeList = tailR closeList openList cost xs
+            | otherwise = Bh.insert (0, x, cost + 1) (tailR closeList openList cost xs)
+        calcHs :: (Grill -> Int) -> BinaryHeap Child -> BinaryHeap Child
+        calcHs _ Leaf = Leaf
+        calcHs hs openList = Bh.insert (cost + (hs grill), grill, cost) (calcHs hs xs)
+            where
+                (heur, grill, cost) = Bh.head openList
+                xs = Bh.tail openList
         createChildren :: Grill -> [Grill]
         createChildren grill = [moveRight grill] ++ [moveLeft grill] ++ [moveUp grill] ++ [moveDown grill]
 

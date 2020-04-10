@@ -5,7 +5,7 @@
 
 -- | 'Data.Heap.Binary' provides a binary min-heap. Balance is maintained through descendant counting.
 module Data.Heap.Binary 
-(BinaryHeap(..), head, tail, merge, singleton, empty, null, fromList, toList, insert) 
+(BinaryHeap(..), head, tail, merge, singleton, empty, null, fromList, toList, insert, Data.Heap.Binary.length) 
 where
 
 import Prelude hiding (head, tail, null)
@@ -73,3 +73,7 @@ head (Node n _ _ _) = n
 tail :: (Ord a) => BinaryHeap a -> BinaryHeap a
 tail Leaf = error "Data.Heap empty list"
 tail (Node _ _ h1 h2) = merge h1 h2
+
+length :: BinaryHeap a -> Int
+length Leaf = 0
+length (Node a _ left right) = 1 + (Data.Heap.Binary.length left) + (Data.Heap.Binary.length right)

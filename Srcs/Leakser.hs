@@ -36,7 +36,7 @@ getRFlag (x:xs) size
     | otherwise = getRFlag xs size
     where eq = splitOn "=" x
 
-getFFlag :: [String] -> (Grill -> Int)
+getFFlag :: [String] -> Heuristic
 getFFlag [] = manathan
 getFFlag (x:x1:xs)
     | x == "-f" || x == "--function" = dispatch x1
@@ -49,7 +49,7 @@ getFFlag (x:xs)
     | otherwise = getFFlag xs
     where eq = splitOn "=" x
 
-leakser :: [String] -> IO (Grill, Grill, (Grill -> Int))
+leakser :: [String] -> IO (Grill, Grill, Heuristic)
 leakser lst = do
     (size, m) <- getMFlag lst
     (size2, r) <- getRFlag lst size
@@ -85,7 +85,7 @@ checkFlags (x:xs)
     where eq = splitOn "=" x
 
 
-dispatch :: String -> (Grill -> Int)
+dispatch :: String -> Heuristic
 dispatch [] = manathan
 dispatch x
     | str == "manathan" = manathan

@@ -1,18 +1,20 @@
 module Srcs.Heuristic
-( manathan
+( Heuristic 
+, manathan
 , un
 , dijkstra
-)where
+) where
 
 import Srcs.Grill (Grill)
+type Heuristic = (Grill -> Grill -> Int)
 
-manathan :: Grill -> Int
-manathan [] = 0
-manathan (x:xs) = 0
+manathan :: Heuristic
+manathan [] _ = 0
+manathan (x:xs) _ = 0
 
-un :: Grill -> Int
-un [] = 0
-un (x:xs) = 0
+un :: Heuristic
+un [] _ = 0
+un (x:xs) _ = 0
 
-dijkstra:: Grill -> Int
-dijkstra _ = 0
+dijkstra:: Heuristic
+dijkstra _ _ = 0

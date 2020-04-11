@@ -8,12 +8,14 @@ import Text.Printf
 import System.Exit
 import Data.List.Split
 import Data.Char
+import System.Environment
 
 flags = [
     ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
-    , ("-a", "--algorithm", "<algorythm name>\t    Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multstar>")
+    , ("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multstar>")
+    , ("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps as:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
@@ -68,17 +70,32 @@ getAFlag (x:xs)
     where eq = splitOn "=" x
 
 
-leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int))
+getVFlag :: [String] -> String
+getVFlag [] = "partial"
+getVFlag (x:x1:xs) 
+    | x == "-v" || x == "--visual" = x1
+    | head eq == "-v" || head eq == "--visual" = last eq
+    | otherwise = getVFlag (x1:xs)
+    where eq = splitOn "=" x
+getVFlag (x:xs)
+    | x == "-v" || x == "--visual" = error $ "No number provided after " ++ x ++ " flag"
+    | head eq == "-v" || head eq == "--visual" = last eq
+    | otherwise = getVFlag xs
+    where eq = splitOn "=" x
+
+leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String)
 leakser lst = do
     (size, m) <- getMFlag lst
     (size2, r) <- getRFlag lst size
     if size /= size2
     then  error "Not same size between given map and result map"
-    else return (m, r, getFFlag lst, getAFlag lst)
+    else return (m, r, getFFlag lst, getAFlag lst, getVFlag lst)
  
 helper :: IO ()
 helper = do
     let x = map (\(fst, sec, third) -> fst ++ sec ++ third) flags
+    name <- getProgName
+    putStrLn $ "Example: " ++ name ++ " -m=<map> -r=<map> -a=<algorithm> -f=<function> -v=<value>\n"
     printHelp flags
     exitWith ExitSuccess
     where

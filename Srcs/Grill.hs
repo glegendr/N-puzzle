@@ -1,9 +1,11 @@
 module Srcs.Grill
-( Grill
+( Act(..)
+, Grill
 , moveRight
 , moveLeft
 , moveUp
 , moveDown
+, moveAct
 , printGrill
 ) where
 
@@ -11,18 +13,33 @@ import Text.Printf
 import Data.List
 
 type Grill = [[Int]]
+data Act = ActLeft | ActUp | ActRight | ActDown deriving (Eq, Ord)
+instance Show Act where
+    show ActLeft = "Left"
+    show ActUp = "Up"
+    show ActRight = "Right"
+    show ActDown = "Down"
 
 printMe :: [Int] -> IO ()
-printMe [] = do  putStrLn ""
-printMe (x:xs) = do
-    printf "%-4i" x
-    printMe xs
+printMe [] = putStrLn "|"
+printMe (x:xs)
+    | x < 10 = do
+        printf "|  %i " x
+        printMe xs
+    | otherwise = do
+        printf "| %i " x
+        printMe xs
 
 printGrill :: Grill -> IO ()
-printGrill [] = return ()
+printGrill [] =  return ()
 printGrill (x:xs) = do
+    putStrLn str
     printMe x
+    if xs == []
+    then putStrLn str
+    else return ()
     printGrill xs
+    where str = foldl (\acc _  -> acc ++ "----+") "+" x
 
 moveRight :: Grill -> Grill
 moveRight [] = []
@@ -56,3 +73,9 @@ moveDown (x:x1:xs)
         in ((take index x) ++ [x1 !! index] ++ (drop (index + 1) x)) : ((take index x1) ++ [0] ++ (drop (index + 1) x1)) : moveDown xs
 moveDown (x:xs) = x : moveDown xs
 
+moveAct :: Grill -> Act -> Grill
+moveAct grill act
+    | act == ActLeft = moveLeft grill
+    | act == ActUp = moveUp grill
+    | act == ActRight = moveRight grill
+    | act == ActDown = moveDown grill

@@ -10,7 +10,7 @@ import Srcs.Parsing(checkGrill)
 main = do
     args <- getArgs
     if args == []
-    then error "No map provided" 
+    then helper
     else return ()
     checkFlags args
     (grill, res, hf, af, visu) <- leakser args

@@ -39,7 +39,7 @@ checkAlpha [] = return ()
 checkAlpha (x:xs)
     | nlyAlpha /= "" = error $ "Alpha found: " ++ (show $ head nlyAlpha)
     | otherwise = checkAlpha xs
-    where nlyAlpha = filter (isAlpha) x
+    where nlyAlpha = filter (\y -> y `notElem` ['0'..'9'] && y /= ' ') x
 
 checkLinesSize :: [[String]] -> Int -> Bool
 checkLinesSize [] _ = False

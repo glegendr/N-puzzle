@@ -1,1 +1,1 @@
-ghc -O2 --make Srcs/main.hs -threaded -rtsopts && rm Srcs/*.o Srcs/*.hi && mv Srcs/main N-puzzle
+ghc -O2 --make Srcs/main.hs -threaded -rtsopts && rm Srcs/*.o Srcs/*.hi Data/Heap/*.o Data/Heap/*.hi && mv Srcs/main N-puzzle

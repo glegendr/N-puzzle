@@ -1,5 +1,5 @@
 module Srcs.Leakser
-(leakser, checkFlags) where
+(leakser, checkFlags, helper) where
 
 import Srcs.Heuristic
 import Srcs.Grill (Grill)
@@ -14,7 +14,7 @@ flags = [
     ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
-    , ("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multstar>")
+    , ("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
     , ("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps as:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
@@ -95,7 +95,7 @@ helper :: IO ()
 helper = do
     let x = map (\(fst, sec, third) -> fst ++ sec ++ third) flags
     name <- getProgName
-    putStrLn $ "Example: " ++ name ++ " -m=<map> -r=<map> -a=<algorithm> -f=<function> -v=<value>\n"
+    putStrLn $ "Example: ./" ++ name ++ " -m=<map> -r=<map> -a=<algorithm> -f=<function> -v=<value>\n"
     printHelp flags
     exitWith ExitSuccess
     where

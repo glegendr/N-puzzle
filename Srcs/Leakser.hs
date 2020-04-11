@@ -12,7 +12,8 @@ import Data.Char
 flags = [
     ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
-    ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <euclidean> <dijkstra>")
+    ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
+    , ("-a", "--algorithm", "<algorythm name>\t    Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multstar>")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
@@ -52,14 +53,28 @@ getFFlag (x:xs)
     | head eq == "-f" || head eq == "--function" = dispatch $ last eq
     | otherwise = getFFlag xs
     where eq = splitOn "=" x
+    
+getAFlag :: [String] -> (Int -> Int -> Int)
+getAFlag [] = (+)
+getAFlag (x:x1:xs) 
+    | x == "-a" || x == "--algorithm" = dispatchAlgo x1
+    | head eq == "-a" || head eq == "--algorithm" = dispatchAlgo $ last eq
+    | otherwise = getAFlag (x1:xs)
+    where eq = splitOn "=" x
+getAFlag (x:xs)
+    | x == "-a" || x == "--algorithm" = error $ "No function provided after " ++ x ++ " flag"
+    | head eq == "-a" || head eq == "--algorithm" = dispatchAlgo $ last eq
+    | otherwise = getAFlag xs
+    where eq = splitOn "=" x
 
-leakser :: [String] -> IO (Grill, Grill, Heuristic)
+
+leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int))
 leakser lst = do
     (size, m) <- getMFlag lst
     (size2, r) <- getRFlag lst size
     if size /= size2
     then  error "Not same size between given map and result map"
-    else return (m, r, getFFlag lst)
+    else return (m, r, getFFlag lst, getAFlag lst)
  
 helper :: IO ()
 helper = do
@@ -88,12 +103,35 @@ checkFlags (x:xs)
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"
     where eq = splitOn "=" x
 
+checkWeight :: [String] -> Int
+checkWeight [] = 1
+checkWeight (x:x1:xs) = error "multiple equal"
+checkWeight (x:xs)
+    | all isDigit x == True = read x :: Int 
+    | otherwise = error $ "wrong weight found: " ++ x
 
 dispatch :: String -> Heuristic
 dispatch [] = manhattan
 dispatch x
     | str == "manhattan" = manhattan
+    | (head wman) == "wmanhattan" = wManhattan $ checkWeight $ tail wman
     | str == "euclidean" = euclidean
+    | (head wman) == "weuclidean" = wEuclidean $ checkWeight $ tail wman
     | str == "dijkstra" = dijkstra
     | otherwise = error $ "action \"" ++ x ++ "\" not found"
-    where str = map toLower x
+    where
+        str = map toLower x
+        wman = splitOn "->" str
+
+dispatchAlgo :: String -> (Int -> Int -> Int)
+dispatchAlgo [] = (+)
+dispatchAlgo x
+    | str == "astar" = (+)
+    | (head algoArrow) == "wastar" = (\x y -> x + (checkWeight $ tail algoArrow) * y)
+    | str == "multstar" = (*)
+    | str == "minimizedastar" = (-)
+    | otherwise = error $ "algorithm \"" ++ x ++ "\" not found"
+    where
+    str = map toLower x
+    algoArrow = splitOn "->" str
+        

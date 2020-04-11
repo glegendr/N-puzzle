@@ -21,6 +21,8 @@ Child = (Int   -> Heuristic
          Int   -> cost) 
 --}
 type Child = (Int, Grill, Int, [Act])
+type Tmp = ((Int -> Int -> Int) -> Heuristic -> Grill -> Int -> Grill -> Int)
+type Tmp2 = Int -> Grill -> Int
 
 main = do
     args <- getArgs
@@ -28,32 +30,32 @@ main = do
     then error "No map provided" 
     else return ()
     checkFlags args
-    (grill, res, hf) <- leakser args
+    (grill, res, hf, af) <- leakser args
     printGrill grill
     putStrLn "--------------"
     printGrill res
     putStrLn "--------------"
-    let (moves, time, mem) = aStar grill res hf
+    let (moves, time, mem) = aStar grill res (algorithmFunction af hf res)
     putStrLn $ "Time Complexity: " ++ (show time)
     putStrLn $ "Memory Complexity: " ++ (show mem)
     putStrLn $ "Number of moves: " ++ (show (Dl.length moves))
     putStrLn $ "Moves: " ++ (show $ reverse moves)
 
-aStar :: Grill -> Grill -> Heuristic -> ([Act], Int, Int)
+aStar :: Grill -> Grill -> Tmp2 -> ([Act], Int, Int)
 aStar grill res hf =
     let
         closeList = Hm.singleton grill 0
         openList = Bh.singleton (0, grill, 0, [])
     in aStarBis closeList openList res hf 0 0
 
-aStarBis :: Map Grill Int -> BinaryHeap Child -> Grill -> Heuristic -> Int -> Int -> ([Act], Int, Int)
+aStarBis :: Map Grill Int -> BinaryHeap Child -> Grill -> Tmp2 -> Int -> Int -> ([Act], Int, Int)
 aStarBis _ Leaf _ _ time mem = ([], time, mem)
-aStarBis closeList openList res hf time mem
+aStarBis closeList openList res tmp time mem
     | grill == res = (act, time + Bh.length openList, mem)
     | otherwise = 
         let children = createChildren grill
             newMem = mem + (checkChildren children closeList) - 1
-        in  aStarBis (Hm.insert grill 0 closeList) (Bh.merge (calcHf hf res $ tailR closeList xs cost act children) xs) res hf (time + 1) newMem
+        in  aStarBis (Hm.insert grill 0 closeList) (Bh.merge (calcHf tmp $ tailR closeList xs cost act children) xs) res tmp (time + 1) newMem
     where
         (heur, grill, cost, act) = Bh.head openList
         xs = Bh.tail openList
@@ -70,12 +72,15 @@ tailR closeList openList cost oldAct ((x, act):xs)
     | member x closeList = tailR closeList openList cost oldAct xs
     | otherwise = Bh.insert (0, x, cost + 1, act : oldAct) (tailR closeList openList cost oldAct xs)
 
-calcHf :: Heuristic -> Grill -> BinaryHeap Child -> BinaryHeap Child
-calcHf _ _ Leaf = Leaf
-calcHf hf res openList = Bh.insert (cost + (hf grill res), grill, cost, act) (calcHf hf res xs)
+calcHf :: Tmp2 -> BinaryHeap Child -> BinaryHeap Child
+calcHf _ Leaf = Leaf
+calcHf tmp openList = Bh.insert (tmp cost grill, grill, cost, act) (calcHf tmp xs)
     where
         (heur, grill, cost, act) = Bh.head openList
         xs = Bh.tail openList
 
 createChildren :: Grill -> [(Grill, Act)]
 createChildren grill = [(moveRight grill, ActRight)] ++ [(moveLeft grill, ActLeft)] ++ [(moveUp grill, ActUp)] ++ [(moveDown grill, ActDown)]
+
+algorithmFunction :: Tmp
+algorithmFunction operator hf res cost grill = operator cost (hf grill res)

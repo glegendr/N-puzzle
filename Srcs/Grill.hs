@@ -55,3 +55,4 @@ moveDown (x:x1:xs)
         let (Just index) = elemIndex 0 x
         in ((take index x) ++ [x1 !! index] ++ (drop (index + 1) x)) : ((take index x1) ++ [0] ++ (drop (index + 1) x1)) : moveDown xs
 moveDown (x:xs) = x : moveDown xs
+

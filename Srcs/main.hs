@@ -24,6 +24,24 @@ type Child = (Int, Grill, Int, [Act])
 type Tmp = ((Int -> Int -> Int) -> Heuristic -> Grill -> Int -> Grill -> Int)
 type Tmp2 = Int -> Grill -> Int
 
+inversion :: [Int] -> Int
+inversion [] = 0
+inversion (x:xs) = foldl (\acc y -> if y < x && y /= 0 then acc + 1 else acc) 0 xs + inversion xs
+
+checkGrill :: Grill -> Grill -> IO ()
+checkGrill grill res
+    | odd size == True && even grillInv == even resInv = return ()
+    | even size == True && even (grillInv + posZeroGrill `div` size) == even (resInv + posZeroRes `div` size) = return ()
+    | otherwise= error "Map is unsolvable"
+    where
+        size = Dl.length grill
+        newGrill = foldl1 (++) grill
+        newRes = foldl1 (++) res
+        grillInv = inversion newGrill
+        resInv = inversion newRes
+        (Just posZeroGrill) = elemIndex 0 newGrill
+        (Just posZeroRes) = elemIndex 0 newRes
+
 main = do
     args <- getArgs
     if args == []
@@ -31,6 +49,7 @@ main = do
     else return ()
     checkFlags args
     (grill, res, hf, af) <- leakser args
+    checkGrill grill res
     printGrill grill
     putStrLn "--------------"
     printGrill res

@@ -4,6 +4,7 @@ module Srcs.Leakser
 import Srcs.Heuristic
 import Srcs.Grill (Grill)
 import Srcs.Parsing
+import Srcs.Benchmark
 import Text.Printf
 import System.Exit
 import Data.List.Split
@@ -14,8 +15,9 @@ flags = [
     ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
-    , ("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
-    , ("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps as:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
+    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps as:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-b", "--benchmark","\t\t\t   Launch benchmarks")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
@@ -109,12 +111,14 @@ checkFlags :: [String] -> IO ()
 checkFlags [] = return ()
 checkFlags (x:x1:xs)
     | x == "-h" || x == "--help" = helper
+    | x == "-b" || x == "--benchmark" = benchmark
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags $ x1:xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"
     where eq = splitOn "=" x
 checkFlags (x:xs)
     | x == "-h" || x == "--help" = helper
+    | x == "-b" || x == "--benchmark" = benchmark
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = error $ "Something is needded after " ++ x ++ " flag"
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"

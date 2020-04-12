@@ -4,7 +4,7 @@ import Srcs.Leakser
 import Srcs.Heuristic
 import Srcs.Algo
 import Srcs.Parsing(checkGrill)
-
+import Srcs.Benchmark
 -- import Debug.Trace
 
 main = do
@@ -21,6 +21,7 @@ main = do
     putStrLn $ "Memory Complexity: " ++ (show mem)
     putStrLn $ "Number of moves: " ++ (show (length moves))
     putStrLn $ "Moves: " ++ (show $ reverse moves)
+    -- ouiCouilles
     
 
 printVisu :: Grill -> Grill -> String -> [Act] -> IO ()

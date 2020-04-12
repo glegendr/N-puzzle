@@ -1,4 +1,4 @@
-module Srcs.Grill
+module Grill
 ( Act(..)
 , Grill
 , moveRight

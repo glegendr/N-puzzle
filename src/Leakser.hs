@@ -1,10 +1,10 @@
-module Srcs.Leakser
+module Leakser
 (leakser, checkFlags, helper) where
 
-import Srcs.Heuristic
-import Srcs.Grill (Grill)
-import Srcs.Parsing
-import Srcs.Benchmark
+import Heuristic
+import Grill (Grill)
+import Parsing
+import Benchmark
 import Text.Printf
 import System.Exit
 import Data.List.Split

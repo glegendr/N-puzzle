@@ -1,11 +1,11 @@
-module Srcs.Benchmark
+module Benchmark
 (benchmark) where
 
-import Srcs.Heuristic
+import Heuristic
 import Data.Time
-import Srcs.Algo
-import Srcs.Grill
-import Srcs.Parsing
+import Algo
+import Grill
+import Parsing
 import Data.List
 import Debug.Trace
 import System.Exit

@@ -1,4 +1,4 @@
-module Srcs.Heuristic
+module Heuristic
 ( Heuristic 
 , manhattan
 , wManhattan
@@ -7,7 +7,7 @@ module Srcs.Heuristic
 , dijkstra
 ) where
 
-import Srcs.Grill (Grill)
+import Grill (Grill)
 import Data.List
 type Heuristic = (Grill -> Grill -> Int)
 

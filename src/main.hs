@@ -1,10 +1,10 @@
 import System.Environment
-import Srcs.Grill
-import Srcs.Leakser
-import Srcs.Heuristic
-import Srcs.Algo
-import Srcs.Parsing(checkGrill)
-import Srcs.Benchmark
+import Grill
+import Leakser
+import Heuristic
+import Algo
+import Parsing(checkGrill)
+import Benchmark
 -- import Debug.Trace
 
 main = do

@@ -1,4 +1,4 @@
-module Srcs.Parsing
+module Parsing
 ( checkGrill
 , parse) where
 
@@ -6,7 +6,7 @@ import System.IO
 import System.Environment
 import Data.List
 import Data.Char
-import Srcs.Grill (Grill)
+import Grill (Grill)
 
 inversion :: [Int] -> Int
 inversion [] = 0

@@ -1,12 +1,12 @@
-module Srcs.Algo
+module Algo
 ( aStar
 , algorithmFunction) where
 
 import Data.List as Dl
 import Data.HashMap as Hm
-import Data.Heap.Binary as Bh
-import Srcs.Grill
-import Srcs.Heuristic
+import Binary as Bh
+import Grill
+import Heuristic
 
 {--
 Child = (Int   -> Heuristic

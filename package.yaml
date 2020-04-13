@@ -24,6 +24,8 @@ dependencies:
 - time
 - deepseq
 - split
+- Chart-diagrams
+- Chart
 
 library:
   source-dirs: src

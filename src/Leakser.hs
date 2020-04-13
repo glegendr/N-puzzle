@@ -16,7 +16,7 @@ flags = [
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
-    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps as:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps or create chart when use benchmark:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2> -- only <-v> when benchmarking")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks")
     ,("-h", "--help", "\t\t\t   Display this message")]
 

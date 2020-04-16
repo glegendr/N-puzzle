@@ -1,5 +1,10 @@
 module Chart
-(chartMe) where
+(chartMe
+, generateMax
+, minmax
+, barChart
+, spiderChart
+, spiderChartEasy) where
 
 import Graphics.Rendering.Chart.Easy
 import Graphics.Rendering.Chart.Backend.Diagrams(toFile)  
@@ -22,36 +27,63 @@ minmax (maxT, maxM, maxMC, maxTC) (t, m, mC, tC) =
   (1000 * t / maxT, 1000 * m / maxM, 1000 * mC / maxMC, 1000 * tC / maxTC)
 
 
-generateMax :: [((String, String, String), Double, Double, Double, Double)] -> (Double, Double, Double, Double)
+generateMax :: [(Double, Double, Double, Double)] -> (Double, Double, Double, Double)
 generateMax list =
   let
-    maxtTime = maximum $ map (\((_, _, _), _, _, _, time) -> time) list
-    maxMoves = maximum $ map (\((_, _, _), _, _, time, _) -> time) list
-    maxMemoryC = maximum $ map (\((_, _, _), _, time, _, _) -> time) list
-    maxTimeC = maximum $ map (\((_, _, _), time, _, _, _) -> time) list
+    maxtTime = maximum $ map (\(_, _, _, time) -> time) list
+    maxMoves = maximum $ map (\(_, _, time, _) -> time) list
+    maxMemoryC = maximum $ map (\(_, time, _, _) -> time) list
+    maxTimeC = maximum $ map (\(time, _, _, _) -> time) list
   in (maxTimeC, maxMemoryC, maxMoves, maxtTime)
 
-repeatNTimes (n:[]) (x:[]) (y:[]) (z:[]) (a:[]) action = do action (line n [[x, y, z, a, x]])
-repeatNTimes (n:ns) (x:xs) (y:ys) (z:zs) (a:as) action = do
-  action (line n [[x, y, z, a, x]])
-  repeatNTimes ns xs ys zs as action
+repeatLineNTimes (n:[]) (x:[]) (y:[]) (z:[]) (a:[]) = do plot (line n [[x, y, z, a, x]])
+repeatLineNTimes (n:ns) (x:xs) (y:ys) (z:zs) (a:as) = do
+  plot (line n [[x, y, z, a, x]])
+  repeatLineNTimes ns xs ys zs as
+
+repeatPointsNTimes (n:[]) (x:[]) (y:[]) (z:[]) (a:[]) = do plot (points n [x, y, z, a, x])
+repeatPointsNTimes (n:ns) (x:xs) (y:ys) (z:zs) (a:as) = do
+  plot (points n [x, y, z, a, x])
+  repeatPointsNTimes ns xs ys zs as
 
 spiderChart :: String -> [((String, String, String), Double, Double, Double, Double)] -> IO ()
 spiderChart path lst =
-    toFile def path $ do
+  toFile def path $ do
     let
       nameList = map (\((algo, heur, _), _, _, _, _) -> algo ++ " " ++ heur) lst
       ((_, _, mapName), _, _, _, _) = head lst 
-      max = generateMax lst
+      max = generateMax $ map (\((_, _, _), tC, mC, moves, time) -> (tC, mC, moves, time)) lst
       myData = map (minmax max) $ map (\((_, _, _), tC, mC, moves, time) -> (tC, mC, moves, time)) lst
       tCList = map (\(tC, _, _, _) -> (0.0, tC)) myData
       mCList = map (\(_, mC, _, _) -> (-mC, 0.0)) myData
       movesList = map (\(_, _, moves, _) -> (0.0, -moves)) myData
       timeList = map (\(_, _, _, time) -> (time, 0.0)) myData
     layout_title .= mapName
-    repeatNTimes nameList tCList mCList movesList timeList plot
+    repeatLineNTimes nameList tCList mCList movesList timeList
+    repeatPointsNTimes nameList tCList mCList movesList timeList
     plot (line "" [[(0,0)]])
     return ()
+
+spiderChartEasy :: String -> [(String, (Double, Double, Double, Double))] -> IO ()
+spiderChartEasy name lst =
+  toFile def ("chart/" ++ name ++ ".svg") $ do
+  --  let newList = map (\(_, tuple) -> tuple) lst
+    let newData = map (\(_, tuple) -> tuple) lst
+    let nameList = map (\(name, _) -> name) lst
+    let maxed = map (minmax (generateMax newData)) newData
+    let tCList = map (\(tC, _, _, _) -> (0.0, -tC)) maxed
+    let mCList = map (\(_, mC, _, _) -> (mC, 0.0)) maxed
+    let movesList = map (\(_, _, moves, _) -> (0.0, moves)) maxed
+    let timeList = map (\(_, _, _, time) -> (-time, 0.0)) maxed
+    layout_title .= name
+  -- layoutlr_grid_last .~ False
+    repeatLineNTimes nameList tCList mCList movesList timeList
+    repeatPointsNTimes nameList tCList mCList movesList timeList
+    return ()
+
+    
+
+    
 
 titles :: [(String, [(String, String, Double, Double, Double, Double)])] -> [String]
 titles [] = []
@@ -93,6 +125,7 @@ barChart path bench lst =
 chartMe listMe listMe2 = do
   spiderChart "chart/spider4x4.svg" listMe
   spiderChart "chart/spider3x3.svg" listMe2 --(filter (\((algo, _, _), _, _, _, _) -> algo == "aStar") listMe)
+  spiderChart "chart/spiderAStar.svg" (filter (\((algo, _, _), _, _, _, _) -> algo == "aStar") listMe2)
   barChart "chart/time4x4.svg" Time listMe
   barChart "chart/timeComplexity4x4.svg" TimeComplexity listMe
   barChart "chart/memoryComplexity4x4.svg" MemoryComplexity listMe

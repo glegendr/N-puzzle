@@ -1,5 +1,6 @@
 module Algo
 ( aStar
+, aStarBench
 , algorithmFunction) where
 
 import Data.List as Dl
@@ -7,6 +8,7 @@ import Data.HashMap as Hm
 import Binary as Bh
 import Grill
 import Heuristic
+import Actions
 
 {--
 Child = (Int   -> Heuristic
@@ -19,15 +21,20 @@ type Tmp2 = Int -> Grill -> Int
 
 aStar :: Grill -> Grill -> Tmp2 -> ([Act], Int, Int)
 aStar grill res hf =
-    let
+    let (act, _, tm, mc) = aStarBench grill res hf
+    in (act, tm ,mc)
+
+aStarBench :: Grill -> Grill -> Tmp2 -> ([Act], [[Act]], Int, Int)
+aStarBench grill res hf =
+        let
         closeList = Hm.singleton grill 0
         openList = Bh.singleton (0, grill, 0, [])
-    in aStarBis closeList openList res hf 0 0
+        in aStarBis closeList openList res hf 0 0
 
-aStarBis :: Map Grill Int -> BinaryHeap Child -> Grill -> Tmp2 -> Int -> Int -> ([Act], Int, Int)
-aStarBis _ Leaf _ _ time mem = ([], time, mem)
+aStarBis :: Map Grill Int -> BinaryHeap Child -> Grill -> Tmp2 -> Int -> Int -> ([Act], [[Act]], Int, Int)
+aStarBis _ Leaf _ _ time mem = ([], [], time, mem)
 aStarBis closeList openList res tmp time mem
-    | grill == res = (act, time + Bh.length openList, mem)
+    | grill == res = (act, fromBinaryHeap openList, time + Bh.length openList, mem)
     | otherwise = 
         let children = createChildren grill
             newMem = mem + (checkChildren children closeList) - 1
@@ -60,3 +67,7 @@ createChildren grill = [(moveRight grill, ActRight)] ++ [(moveLeft grill, ActLef
 
 algorithmFunction :: Tmp
 algorithmFunction operator hf res cost grill = operator cost (hf grill res)
+
+fromBinaryHeap :: BinaryHeap Child -> [[Act]]
+fromBinaryHeap Leaf = []
+fromBinaryHeap (Node (_, _, _, acts) _ left right) = acts : ((fromBinaryHeap left) ++ (fromBinaryHeap right))

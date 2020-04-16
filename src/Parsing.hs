@@ -1,6 +1,7 @@
 module Parsing
-( checkGrill
-, parse) where
+(checkGrillBool
+,checkGrill
+,parse) where
 
 import System.IO
 import System.Environment
@@ -14,9 +15,15 @@ inversion (x:xs) = foldl (\acc y -> if y < x && y /= 0 then acc + 1 else acc) 0 
 
 checkGrill :: Grill -> Grill -> IO ()
 checkGrill grill res
-    | odd size == True && even grillInv == even resInv = return ()
-    | even size == True && even (grillInv + posZeroGrill `div` size) == even (resInv + posZeroRes `div` size) = return ()
-    | otherwise= error "Map is unsolvable"
+    | ret == True = return ()
+    | otherwise = error "Map is unsolvable"
+    where ret = checkGrillBool res grill
+
+checkGrillBool :: Grill -> Grill -> Bool
+checkGrillBool res grill
+    | odd size == True && even grillInv == even resInv = True
+    | even size == True && even (grillInv + posZeroGrill `div` size) == even (resInv + posZeroRes `div` size) = True
+    | otherwise = False
     where
         size = length grill
         newGrill = foldl1 (++) grill

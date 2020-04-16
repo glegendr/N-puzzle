@@ -5,6 +5,7 @@ import Heuristic
 import Algo
 import Parsing(checkGrill)
 import Benchmark
+import Actions
 -- import Debug.Trace
 
 main = do
@@ -15,14 +16,14 @@ main = do
     checkFlags args
     (grill, res, hf, af, visu) <- leakser args
     checkGrill grill res
-    let (moves, time, mem) = aStar grill res (algorithmFunction af hf res)
+    let (moves, acts, time, mem) = aStarBench grill res (algorithmFunction af hf res)
+    let newActs = Actions.insert (foldl (\tree act -> Actions.insert tree act False) Actions.new acts) moves True
     printVisu grill res visu $ reverse moves
+    writeFile "chart/oui.json" (show newActs)
     putStrLn $ "Time Complexity: " ++ (show time)
     putStrLn $ "Memory Complexity: " ++ (show mem)
     putStrLn $ "Number of moves: " ++ (show (length moves))
     putStrLn $ "Moves: " ++ (show $ reverse moves)
-    -- ouiCouilles
-    
 
 printVisu :: Grill -> Grill -> String -> [Act] -> IO ()
 printVisu grill res visu act

@@ -1,24 +1,20 @@
 module Grill
-( Act(..)
-, Grill
+( Grill
 , moveRight
 , moveLeft
 , moveUp
 , moveDown
 , moveAct
 , printGrill
+, newGrill
+, toGrill
 ) where
 
 import Text.Printf
 import Data.List
+import Actions
 
 type Grill = [[Int]]
-data Act = ActLeft | ActUp | ActRight | ActDown deriving (Eq, Ord)
-instance Show Act where
-    show ActLeft = "Left"
-    show ActUp = "Up"
-    show ActRight = "Right"
-    show ActDown = "Down"
 
 printMe :: [Int] -> IO ()
 printMe [] = putStrLn "|"
@@ -79,3 +75,13 @@ moveAct grill act
     | act == ActUp = moveUp grill
     | act == ActRight = moveRight grill
     | act == ActDown = moveDown grill
+
+toGrill :: [Int] -> Grill
+toGrill tab
+    | size /= (fromIntegral $ round size) || size < 3 = error "wrong grill size"
+    | otherwise = newGrill tab $ round size
+    where size = sqrt $ fromIntegral $ length tab
+
+newGrill :: [Int] -> Int -> Grill
+newGrill [] _ = []
+newGrill tab size = take size tab : newGrill (drop size tab) size

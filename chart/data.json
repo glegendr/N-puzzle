@@ -1,0 +1,47 @@
+[
+	{
+		"name": "Dijkstra",
+		"timeComplexity": "10.0",
+		"memoryComplexity": "10.0",
+		"strokes": "4.145243009945581",
+		"branchDepth": "9.245577917411728",
+		"time": "10.0",
+		"complexity": "10.0"
+	},
+	{
+		"name": "Euclidean",
+		"timeComplexity": "7.11262999805671",
+		"memoryComplexity": "7.284413176275061",
+		"strokes": "4.145243009945581",
+		"branchDepth": "5.790980000677227",
+		"time": "0.4407403293424814",
+		"complexity": "2.388092992350105"
+	},
+	{
+		"name": "Manhattan8",
+		"timeComplexity": "5.7049162878171265",
+		"memoryComplexity": "5.764755288988156",
+		"strokes": "10.0",
+		"branchDepth": "10.0",
+		"time": "3.949936627780242e-2",
+		"complexity": "0.5898414424960585"
+	},
+	{
+		"name": "Manhattan3",
+		"timeComplexity": "6.549535529201562",
+		"memoryComplexity": "6.705325828934091",
+		"strokes": "7.9283167573653595",
+		"branchDepth": "8.16544607500553",
+		"time": "0.2013887958922618",
+		"complexity": "1.7780107866080028"
+	},
+	{
+		"name": "Manhattan",
+		"timeComplexity": "6.736579303120047",
+		"memoryComplexity": "6.967700886421894",
+		"strokes": "4.145243009945581",
+		"branchDepth": "5.600031716185809",
+		"time": "0.26130595477602964",
+		"complexity": "1.7222139937736862"
+	}
+]

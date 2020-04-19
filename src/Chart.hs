@@ -1,7 +1,5 @@
 module Chart
 (chartMe
-, generateMax
-, minmax
 , barChart
 , spiderChart
 , spiderChartEasy) where

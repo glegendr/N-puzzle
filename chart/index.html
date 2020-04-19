@@ -1,153 +1,213 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-<style>
-
-.node circle {
-  fill: #999;
-}
-
-.node text {
-  font: 10px sans-serif;
-}
-
-.node--internal circle {
-  fill: #555;
-}
-
-.node--internal text {
-  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
-}
-
-.link {
-  fill: none;
-  /* stroke: #555; */
-  stroke-opacity: 0.4;
-  stroke-width: 1.5px;
-}
-
-.flex-container {
-  /* We first create a flex layout context */
-  display: flex;
-  
-  /* Then we define the flow direction 
-     and if we allow the items to wrap 
-   * Remember this is the same as:
-   * flex-direction: row;
-   * flex-wrap: wrap;
-  j */
-  flex-flow: row wrap;
-  
-  /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
-  
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.flex-item {
-  background: rgb(255, 38, 0);
-  padding: 5px;
-  width: 200px;
-  height: 150px;
-  margin-top: 10px;
-  line-height: 150px;
-  color: white;
-  font-weight: bold;
-  font-size: 3em;
-  text-align: center;
-}
-
-</style>
+  <link rel="stylesheet" type="text/css" href="spider.css">
 </head>
-<body>
-<ul class="flex-container">
-  <svg id="Manhattan" width="960" height="1060"></svg>
-  <svg id="Manhattan3" width="960" height="1060"></svg>
-  <svg id="Manhattan8" width="960" height="1060"></svg>
-</ul>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<body style="margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;">
+  <div class="col">
+  <ol class="menu">
+    <li>
+      <a class="menu-item" href="#" id="0" name="Manhattan">
+        <h3>Manhattan</h3>
+        <p>The Manhattan distance is the distance between 2 points traveled by a taxi when he is in a city ​​arranged in grid as:<br> d(A,B) = |XA - XB| + |YA - YB|</p>
+      </a>
+    </li>
+    <li>
+      <a class="menu-item" href="manhattan3Depth.html" id="1" name="Manhattan3">
+        <h3>Manhattan3</h3>
+        <p> Same as Manhattan but the distance is weighted by 3. This technique is faster but gives a less precise result in number of strokes as:<br> d(A,B) = 3 * (|XA - XB| + |YA - YB|)</p>
+      </a>
+    </li>
+    <li>
+      <a class="menu-item" href="#" id="2" name="Manhattan8">
+        <h3>Manhattan8</h3>
+        <p>Same as Manhattan3 but weighted by 8. This heuristic is better with large maps but can miss the solution on small maps as:<br> d(A,B) = 8 * (|XA - XB| + |YA - YB|)</p>
+      </a>
+    </li>
+    <li>
+      <a class="menu-item" href="#" id="3" name="Euclidean">
+        <h3>Euclidean</h3>
+        <p>The Euclidean distance is the "ordinary" straight-line distance between two points as:<br> d(A,B) = √((XA - XB)^2 + (YA - YB)^2)</p>
+      </a>
+    </li>
+    <li>
+      <a class="menu-item" href="#" id="4" name="Dijkstra">
+        <h3>Dijkstra</h3>
+        <p>Dijkstra is an heuristic that check all the possible strokes, depth by depth. It will be the slower heuristic but it will always give the smaller strokes result</p>
+      </a>
+    </li>
+  </ol>
+</div>
+<div class="col col--2">
+  <div class="radar" id="chart"></div>
+  
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
 
-const jsonArray = [{id: "Manhattan", json: "manhattan.json"}, {id: "Manhattan3", json: "manhattan3.json"}, {id: "Manhattan8", json: "manhattan8.json"}] 
+radar = function(id) {
+  var chart = function(el) {
+    el.each(function(data) {
 
-for (const element of jsonArray) {
-  console.log(element);
-  let svg = d3.select('#' + element.id),
-      width = +svg.attr("width"),
-      height = +svg.attr("height"),
-      g = svg.append("g").attr("transform", "translate(" + (width / 2 + 40) + ",400)");
+      // ----- Setup ----- //
 
-  let tree = d3.tree()
-      .size([2 * Math.PI, 300])
-      .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
-
-  d3.json(element.json, function(error, data) {
-    if (error) throw error;
-
-    let root = tree(d3.hierarchy(data));
-
-    let link = g.selectAll(".link")
-      .data(root.links())
-      .enter().append("path")
-        .attr("class", "link")
-        .style("stroke", function(d) {3
-          let color;
-          switch (d.target.data.name) {
-            case "Right":
-              color = "#b34f6a"
-              break ;
-            case "Left":
-              color = "#51823a"
-              break ;
-            case "Up":
-              color = "#447494"
-              break ;
-            case "Down":
-              color = "#9e6745"
-              break ;
-          }
-          return (d.target.data.finish ? "#cad" : color);
+      var wrap = d3.select(this),
+        axes = ["Time Complexity", "Strokes", "Complexity", "Memory Complexity", "Branch Depth", "Time"],
+        domain = [0, 10],
+        padding = [75, 75, 75, 75],
+        width = wrap[0][0].clientWidth - padding[1] - padding[3],
+        height = wrap[0][0].clientWidth - padding[0] - padding[2],
+        radius = width * 0.5
+        slice = Math.PI * 2 / axes.length;
+      
+      var rScale = d3.scale.linear()
+        .domain(domain)
+        .range([0, radius]);
+      
+      var blob = d3.svg.line.radial()
+		    .angle(function(d, i) {
+          return i * slice;
         })
-        .attr("d", d3.linkRadial()
-            .angle(function(d) { return d.x; })
-            .radius(function(d) { return d.y; }));
+		    .radius(function(d) {
+          return rScale(d);
+        })
+		    .interpolate('cardinal-closed');
+      
+      // ----- Enter ----- //
 
-    let node = g.selectAll(".node")
-      .data(root.descendants())
-      .enter().append("g")
-        .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
-        .attr("transform", function(d) { return "translate(" + radialPoint(d.x, d.y) + ")"; });
+      var svg = wrap.selectAll('svg').data([data]),
+        init = svg.enter().append('svg').append('g');
+      
+      var axisWrap = init.append('g')
+        .attr('class', 'radar-axis');
+      
+      axisWrap.selectAll('.radar-axis-level')
+	      .data(d3.range(domain[0], domain[1] + 1).reverse())
+	      .enter()
+		      .append('circle')
+		      .attr('class', 'radar-axis-level');
+      
+      var axisLines = axisWrap.selectAll('.radar-axis-lines')
+		    .data(axes)
+		    .enter()
+		      .append('g')
+		      .attr('class', 'radar-axis-lines');
+      
+      axisLines.append('line')
+		    .attr('class', 'radar-axis-line')
+		    .attr('x1', 0)
+		    .attr('y1', 0);
+      
+      axisLines.append("text")
+		    .attr("class", "radar-axis-label")
+		    .text(function(d, i) {
+          return axes[i];
+        });
+      
+      init.selectAll('.radar-area')
+        .data([data])
+        .enter().append('path')
+          .attr('class', 'radar-area')
+          .attr('d', function(d) {
+            return(blob([0, 0, 0, 0, 0]));
+          });
+      
+      init.selectAll('.radar-point')
+        .data(data)
+        .enter().append('circle')
+          .attr('class', 'radar-point')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 5)
+      
+      // ----- Update ---- //
 
-    node.append("circle")
-        .attr("r", function(d) { return (d.data.finish ? 2.5 : d.children ? 0 : 2.5); })
-        .style("fill", function(d) { return (d.data.finish ? "#f00" : "#555"); });
+      svg
+        .attr('width', width + padding[1] + padding[3])
+        .attr('height', height + padding[0] + padding[2]);
+ 
+      var g = svg.select('g')
+        .attr('transform', 'translate(' + (padding[3] + width * 0.5) + ', ' + (padding[0] + height * 0.5) + ')');
+      
+      g.selectAll('.radar-axis-level')
+        .attr('r', function(d) {
+          return radius / domain[1] * d;
+        });
+      
+      g.selectAll('.radar-axis-line')
+		    .attr('x2', function(d, i) {
+          return rScale(domain[1] * 1.025) * Math.cos(slice * i - Math.PI * 0.5);
+        })
+		    .attr('y2', function(d, i) {
+          return rScale(domain[1] * 1.025) * Math.sin(slice * i - Math.PI * 0.5);
+        });
+      
+      g.selectAll('.radar-axis-label')
+		    .attr('x', function(d, i) {
+          return rScale(domain[1] * 1.15) * Math.cos(slice * i - Math.PI * 0.5);
+        })
+		    .attr('y', function(d, i) {
+          return rScale(domain[1] * 1.15) * Math.sin(slice * i - Math.PI * 0.5);
+        })
+        .attr('text-anchor', function (d) {
+          var x = d3.select(this).attr('x');
+          if (x > 1) {
+            return 'start';
+          } else if (x < -1) { 
+            return 'end';
+          } else {
+            return 'middle';
+          }
+        });
+      
+      g.select('.radar-area')
+        .transition()
+          .duration(600)
+          .ease('cubic-out')
+          .attr('d', function(d) {
+            return(blob(d));
+          });
+      
+      g.selectAll('.radar-point')
+        .data(function(d) {
+          return d;
+        })
+        .transition()
+          .duration(600)
+          .ease('cubic-out')
+          .attr('cx', function(d, i) {
+            return rScale(d) * Math.cos(slice * i - Math.PI * 0.5);
+          })
+          .attr('cy', function(d, i) {
+            return rScale(d) * Math.sin(slice * i - Math.PI * 0.5);
+          })
+    });
+  }
 
-    svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 50)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
-        .text(element.id);
-    
-    node.append("text")
-      .attr("dy", "0.31em")
-      .attr("x", function(d) { return d.x < Math.PI === !d.children ? 6 : -6; })
-      .attr("text-anchor", function(d) { return d.x < Math.PI === !d.children ? "start" : "end"; })
-      .attr("transform", function(d) { return "rotate(" + (d.x < Math.PI ? d.x - Math.PI / 2 : d.x + Math.PI / 2) * 180 / Math.PI + ")"; })
-      .text(function(d) {
-    			return (d.children ? "" : d.data.finish ? d.data.depth : "")
-  		});
+  return chart;
+}
+
+ d3.json("data.json", function(error, data) {
+     if (error) throw error;
+  const first = [data[0].timeComplexity, data[0].strokes, data[0].complexity, data[0].memoryComplexity, data[0].branchDepth, data[0].time];
+  d3.select('#chart')
+    .datum(first)
+    .call(radar(this));
+  d3.selectAll('.menu-item').on('mouseenter', function(d) {
+    let id = 0;
+    let index = 0;
+    for (const element of data) {
+      if (element.name == this.name) {
+          id = index;
+        }
+        ++index;
+    }
+    var ret = [data[id].timeComplexity, data[id].strokes, data[id].complexity, data[id].memoryComplexity, data[id].branchDepth, data[id].time];
+    d3.select('#chart')
+      .datum(ret)
+      .call(radar(this));
 
   });
-}
-
-function radialPoint(x, y) {
-  return [(y = +y) * Math.cos(x -= Math.PI / 2), y * Math.sin(x)];
-}
-
+});
 </script>
 </body>
-</html>

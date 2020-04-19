@@ -48,4 +48,4 @@ wEuclidean _ [] _ = 0
 wEuclidean weight grill res = weight * euclidean grill res
 
 dijkstra:: Heuristic
-dijkstra _ _ = 0
+dijkstra _ _ = 1

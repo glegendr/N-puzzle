@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <link rel="stylesheet" type="text/css" href="../base.css">
+    <style>
+        body {
+            position: relative;
+            margin-left:15px;
+            background-color:#eee;
+        }
+        #circleBar-Time-text,
+        #circleBar-Strokes-text,
+        #circleBar-TimeComplexity-text,
+        #circleBar-MemoryComplexity-text,
+        #circleBar-Complexity-text,
+        #circleBar-BranchDepth-text,
+        #circleBar-mobile-text{
+            font-family: 'FranklinGothic-Book' "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+            font-size:16px;
+            fill:#000;
+        }
+        #circleBar-Time-labels tspan,
+        #circleBar-Strokes-labels tspan,
+        #circleBar-TimeComplexity-labels tspan,
+        #circleBar-MemoryComplexity-labels tspan,
+        #circleBar-Complexity-labels tspan,
+        #circleBar-BranchDepth-labels tspan,
+        #circleBar-mobile-labels tspan {
+            font-family: 'FranklinGothic-Book' "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+            font-size:10px;
+            fill:#6D6E71;
+        }
+
+        #circleBar-Time-values tspan,
+        #circleBar-Strokes-values tspan,
+        #circleBar-TimeComplexity-values tspan,
+        #circleBar-MemoryComplexity-values tspan,
+        #circleBar-Complexity-values tspan,
+        #circleBar-BranchDepth-values tspan,
+        #circleBar-mobile-values tspan {
+            font-family: 'FranklinGothic-Book' "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+            font-size: 9px;
+            font-weight:bold;
+            fill: #7D3A4D;
+        }
+        #circleBar-web-values tspan,
+        #circleBar-tmp-values tspan {
+            fill: #7D3A4D;
+        }
+        #circleBar-mobile-values tspan {
+            fill: #684E88;
+        }
+    </style>
+</head>
+<div id="name"></div>
+<body style="margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;">
+    <div class="col">
+        <ol class="menu">
+          <li>
+            <a class="menu-item" href="../index.html">
+              <h3>Home</h3>
+            </a>
+            <a class="menu-description">
+              <h3>Manhattan3</h3>
+              <p>Same as Manhattan but the distance is weighted by 3. This technique is faster but gives a less precise result in number of strokes as:<br> d(A,B) = 3 * (|XA - XB| + |YA - YB|)</p>
+            </a>
+            <a class="menu-item" href="depth.html">
+                <h3>Depth Graphic</h3>
+            </a>
+            <a class="menu-description">
+                <h3>Bar Graphic</h3>
+                <p>Theses graphics show all the data mixed with all algorithm. In the center of the graph you got the current data and all around the value with each algorithm</p>
+                <br>
+                <p>Time:              the time of each algorithm</p>
+                <p>Strokes:           the number of strokes</p>
+                <p>Branch depth:      the average of all branch depth</p>
+                <p>Time Complexity:   total number of states ever selected in the "opened" set</p>
+                <p>Memory Complexity: maximum number of states ever represented in memory at the same timeduring the search</p>
+                <p>Complexity:        Time * Strokes</p>
+            </a>
+            <a class="menu-item" href="line.html">
+              <h3>Line Graphic</h3>
+            </a>
+          </li>
+      </div>
+      <div class="col col--2">
+        <ul class="flex-container">
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- Time Circle Bar Chart -->
+            <g id="circleBar-Time-group">
+              <image id="circleBar-Time-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-Time-text" opacity="0" x="130" y="150">Time</text>
+                <g id="circleBar-Time-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-Time-clipPath">
+                    <rect id="circleBar-Time-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-Time-legend" clip-path="url(#circleBar-Time-clipPath)">
+                    <text id="circleBar-Time-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-Time-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: Time Circle Bar Chart -->
+        </g>
+    </svg>
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- Strokes Circle Bar Chart -->
+            <g id="circleBar-Strokes-group">
+              <image id="circleBar-Strokes-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-Strokes-text" opacity="0" x="125" y="150">Strokes</text>
+                <g id="circleBar-Strokes-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-Strokes-clipPath">
+                    <rect id="circleBar-Strokes-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-Strokes-legend" clip-path="url(#circleBar-Strokes-clipPath)">
+                    <text id="circleBar-Strokes-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-Strokes-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: Strokes Circle Bar Chart -->
+        </g>
+    </svg>
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- BranchDepth Circle Bar Chart -->
+            <g id="circleBar-BranchDepth-group">
+              <image id="circleBar-BranchDepth-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-BranchDepth-text" opacity="0" x="100" y="150">Branch Depth</text>
+                <g id="circleBar-BranchDepth-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-BranchDepth-clipPath">
+                    <rect id="circleBar-BranchDepth-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-BranchDepth-legend" clip-path="url(#circleBar-BranchDepth-clipPath)">
+                    <text id="circleBar-BranchDepth-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-BranchDepth-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: BranchDepth Circle Bar Chart -->
+        </g>
+    </svg>
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- TimeComplexity Circle Bar Chart -->
+            <g id="circleBar-TimeComplexity-group">
+              <image id="circleBar-TimeComplexity-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-TimeComplexity-text" opacity="0" x="90" y="150">Time Complexity</text>
+                <g id="circleBar-TimeComplexity-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-TimeComplexity-clipPath">
+                    <rect id="circleBar-TimeComplexity-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-TimeComplexity-legend" clip-path="url(#circleBar-TimeComplexity-clipPath)">
+                    <text id="circleBar-TimeComplexity-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-TimeComplexity-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: TimeComplexity Circle Bar Chart -->
+        </g>
+    </svg>
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- MemoryComplexity Circle Bar Chart -->
+            <g id="circleBar-MemoryComplexity-group">
+              <image id="circleBar-MemoryComplexity-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-MemoryComplexity-text" opacity="0" x="78" y="150">Memory Complexity</text>
+                <g id="circleBar-MemoryComplexity-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-MemoryComplexity-clipPath">
+                    <rect id="circleBar-MemoryComplexity-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-MemoryComplexity-legend" clip-path="url(#circleBar-MemoryComplexity-clipPath)">
+                    <text id="circleBar-MemoryComplexity-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-MemoryComplexity-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: MemoryComplexity Circle Bar Chart -->
+        </g>
+    </svg>
+    <svg overflow="visible">
+        <g id="circleBarCharts">
+            <!-- Complexity Circle Bar Chart -->
+            <g id="circleBar-Complexity-group">
+              <image id="circleBar-Complexity-icon" opacity="0" x="101" y="112" overflow="visible" width="98" height="77" xlink:href="http://www.frank-designs.com/images/icon_web.png" />
+                <text id="circleBar-Complexity-text" opacity="0" x="110" y="150">Complexity</text>
+                <g id="circleBar-Complexity-chart" transform="translate(150,150)"></g>
+                <clippath id="circleBar-Complexity-clipPath">
+                    <rect id="circleBar-Complexity-clipLabels" x="140" y="215" width="180" height="0"></rect>
+                </clippath>
+                <g id="circleBar-Complexity-legend" clip-path="url(#circleBar-Complexity-clipPath)">
+                    <text id="circleBar-Complexity-values" transform="translate(157,240)"></text>
+                    <text id="circleBar-Complexity-labels" transform="translate(212,240)"></text>
+                </g>
+            </g>
+            <!-- END: Complexity Circle Bar Chart -->
+        </g>
+    </svg>
+</ul>
+      </div>
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js></script>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const product = urlParams.get('name')
+        document.getElementById("name").innerHTML = product;
+        d3.json("bar.json", function(error, jsonData) {
+        
+        function drawBarCircleChart(data,target,values,labels){
+            var w = 362,
+                h = 362,
+                size = 0,
+                radius = 200,
+                sectorWidth = .1,
+                radScale = 25,
+                sectorScale = 1.45,
+                target = d3.select(target),
+                valueText = d3.select(values),
+                labelText = d3.select(labels);
+
+            for (const element of data) {
+                if (parseFloat(element.value) > size) {
+                    size = element.value
+                }
+            }
+            size *= 1.15
+            var arc = d3.svg.arc()
+                .innerRadius(function(d,i){return (d.index/sectorScale) * radius + radScale; })
+                .outerRadius(function(d,i){return ((d.index/sectorScale) + (sectorWidth/sectorScale)) * radius + radScale; })
+                .startAngle(Math.PI)
+                .endAngle(function(d) { return Math.PI + (d.value / size) * 2 * Math.PI; });
+            
+            var path = target.selectAll("path")
+                .data(data);
+        
+            //TODO: seperate color and index from data object, make it a pain to update object order
+            path.enter().append("svg:path")
+                .attr("fill",function(d,i){return d.fill})
+                .attr("stroke","#D1D3D4")
+                .transition()
+                .ease("elastic")
+                .duration(1000)
+                .delay(function(d,i){return i*100})
+                .attrTween("d", arcTween);
+                
+            valueText.selectAll("tspan").data(data).enter()
+                .append("tspan")
+                .attr({
+                    x:50,
+                    y:function(d,i){return i*14},       
+                    "text-anchor":"end"
+                })
+                .text(function(d,i){return data[i].value});
+            
+            labelText.selectAll("tspan").data(data).enter()
+                .append("tspan")
+                .attr({
+                    x:0,
+                    y:function(d,i){return i*14}
+                })
+                .text(function(d,i){return data[i].label});
+            
+            function arcTween(b) {
+                var i = d3.interpolate({value: 0}, b);
+                return function(t) {
+                    return arc(i(t));
+                };
+            }
+        }
+        
+        // Animation Queue
+        for (const element of jsonData) {
+            setTimeout(function(){drawBarCircleChart(element.values,"#circleBar-" + element.name + "-chart","#circleBar-" + element.name + "-values","#circleBar-" + element.name + "-labels")},500);
+            d3.select("#circleBar-" + element.name + "-icon")
+            .transition()
+            .delay(500)
+            .duration(500)
+            .attr("opacity","1");
+        d3.select("#circleBar-" + element.name + "-text")
+            .transition()
+            .delay(750)
+            .duration(500)
+            .attr("opacity","1");      
+        d3.select("#circleBar-" + element.name + "-clipLabels")
+            .transition()
+            .delay(600)
+            .duration(1250)
+            .attr("height","150");
+        }
+    });
+    </script>
+</body>

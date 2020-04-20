@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <link rel="stylesheet" type="text/css" href="../base.css">
+    <style>
+        .lineTitle {
+            padding-left: 20%;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .lineChart {
+            padding-left: 20%
+        }
+    </style>
+</head>
+<body style="margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;">
+    <div class="col">
+        <ol class="menu">
+          <li>
+            <a class="menu-item" href="../index.html">
+              <h3>Home</h3>
+            </a>
+            <a class="menu-description">
+              <h3>Euclidean</h3>
+              <p>The Euclidean distance is the "ordinary" straight-line distance between two points as:<br> d(A,B) = √((XA - XB)^2 + (YA - YB)^2)</p>
+            </a>
+            <a class="menu-item" href="depth.html">
+              <h3>Depth Graphic</h3>
+            </a>
+            <a class="menu-item" href="bar.html">
+              <h3>Bar Graphic</h3>
+            </a>
+            <a class="menu-description">
+                <h3>Line Graph</h3>
+                <p>Theses graphics represents the courbes of time and complexity on 50 maps. <br>The differents colors reprensents differents algorithm as:</p>
+                <p style="color:#231F20">AStar</p>
+                <p style="color:#53363C">AStar3</p>
+                <p style="color:#660E34">AStar8</p>
+                <p style="color:#96606B">MultStar</p>
+            </a>
+          </li>
+      </div>
+      <div class="col col--2">
+          <ul class="flex-container">
+        <div class="container">
+            <div>
+                <div>
+                    <h4 class="lineTitle">Time</h4>
+                    <canvas id="time" width="600" height="300" class="lineChart"></canvas>
+              </div><div>
+                    <h4 class="lineTitle">Complexity</h4>
+                    <canvas id="complexity" width="600" height="300" class="lineChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </ul>
+      </div>
+      <script src=https://cdnjs.cloudflare.com/ajax/libs/d3/3.2.2/d3.v3.min.js></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script>
+    d3.json("line.json", function(error, jsonData) {
+    var length = jsonData[0].time.length;
+    var foo = [...Array(length).keys()];
+    var timedata = [];
+    var complexitydata = [];
+        for (const element of jsonData) {
+            console.log(element.name);
+            console.log(element.time);
+            console.log(element.complexity);
+            var color1;
+            var color2;
+            switch (element.name) {
+                case "AStar":
+                    color1 = "rgba(220,220,220,0)";
+                    color2 = "#231F20";
+                    break ;
+                case "AStar3":
+                    color1 = "rgba(220,220,220,0)";
+                    color2 = "#53363C";
+                    break ;
+                case "AStar8":
+                    color1 = "rgba(220,220,220,0)";
+                    color2 = "#660E34";
+                    break ;
+                case "MultStar":
+                    color1 = "rgba(220,220,220,0)";
+                    color2 = "#96606B";
+                    break ;
+                    
+            }
+            timedata.push({
+                fillColor: color1,
+                strokeColor: color2,
+                pointColor: color2,
+                showTooltips: false,
+                data: element.time
+            });
+            complexitydata.push({
+                fillColor: color1,
+                strokeColor: color2,
+                pointColor: color2,
+                showTooltips: false,
+                data: element.complexity
+            });
+        }
+    var time = {
+        labels: foo,
+        datasets: timedata
+    }
+    var complexity = {
+        labels: foo,
+        datasets: complexitydata
+    }
+        // var lineChartData = {
+        //     labels: ["Data 1", "Data 2", "Data 3", "Data 4", "Data 5", "Data 6", "Data 7"],
+        //     datasets: [{
+        //         fillColor: "rgba(220,220,220,0)",
+        //         strokeColor: "rgba(220,180,0,1)",
+        //         pointColor: "rgba(220,180,0,1)",
+        //         showTooltips: false,
+        //         data: [20, 30, 80, 20, 40, 10, 60]
+        //     }, {
+        //         fillColor: "rgba(151,187,205,0)",
+        //         strokeColor: "rgba(151,187,205,1)",
+        //         pointColor: "rgba(151,187,205,1)",
+        //         showTooltips: false,
+        //         data: [60, 10, 40, 30, 80, 30, 20]
+        //     }]
+        // }
+        // var lineChartData2 = {
+        //     labels: ["Data 1", "Data 2", "Data 3", "Data 4", "Data 5", "Data 6", "Data 7"],
+        //     datasets: [{
+        //         fillColor: "rgba(220,220,220,0)",
+        //         strokeColor: "rgba(220,180,0,1)",
+        //         pointColor: "rgba(220,180,0,1)",
+        //         showTooltips: false,
+        //         data: [0.20, 0.30, 0.80, 0.20, 0.40, 0.10, 0.60]
+        //     }, {
+        //         fillColor: "rgba(151,187,205,0)",
+        //         strokeColor: "rgba(151,187,205,1)",
+        //         pointColor: "rgba(151,187,205,1)",
+        //         showTooltips: false,
+        //         data: [0.60, 0.10, 0.40, 0.30, 0.80, 0.30, 0.20]
+        //     }]
+        // }
+        Chart.defaults.global.animationSteps = 50;
+        Chart.defaults.global.tooltipYPadding = 16;
+        Chart.defaults.global.tooltipCornerRadius = 0;
+        Chart.defaults.global.tooltipTitleFontStyle = "normal";
+        Chart.defaults.global.tooltipFillColor = "rgba(0,160,0,0.8)";
+        Chart.defaults.global.animationEasing = "easeOutBounce";
+        Chart.defaults.global.responsive = true;
+        Chart.defaults.global.scaleLineColor = "black";
+        Chart.defaults.global.scaleFontSize = 16;
+
+        var ctx2 = document.getElementById("time").getContext("2d");
+        var LineChartDemo2 = new Chart(ctx2).Line(time, {
+            pointDotRadius: 2,
+            bezierCurve: true,
+            scaleShowVerticalLines: false,
+            showTooltips: false,
+            scaleGridLineColor: "black"
+        });
+        var ctx = document.getElementById("complexity").getContext("2d");
+        var LineChartDemo = new Chart(ctx).Line(complexity, {
+            pointDotRadius: 2,
+            bezierCurve: true,
+            scaleShowVerticalLines: false,
+            showTooltips: false,
+            scaleGridLineColor: "black"
+        });
+    });
+    </script>
+</body>

@@ -73,25 +73,33 @@ tuppleToString (str, (a, b, c, d, e, f)) = (str, (show a, show b, show c, show d
 
 toJson3 :: [(String, String)] -> String
 toJson3 [] = []
-toJson3 ((name, value):[]) = "\t\t\"" ++ name ++ "\": \"" ++ value ++  "\"\n"
-toJson3 ((name, value):xs) = "\t\t\"" ++ name ++ "\": \"" ++ value ++  "\",\n" ++ toJson3 xs
+toJson3 ((name, value):[])
+    | "Scope" `isSuffixOf` name = "\t\t\"" ++ (take (length name - 5) name) ++ "\": " ++ value ++  "\n"
+    | otherwise = "\t\t\"" ++ name ++ "\": \"" ++ value ++  "\"\n"
+toJson3 ((name, value):xs)
+    | "Scope" `isSuffixOf` name = "\t\t\"" ++ (take (length name - 5) name) ++ "\": " ++ value ++  ",\n" ++ toJson3 xs
+    | otherwise = "\t\t\"" ++ name ++ "\": \"" ++ value ++  "\",\n" ++ toJson3 xs
 
 toJson2 :: [[(String, String)]] -> String
-toJson2 [] = "]"
+toJson2 [] = []
 toJson2 (x:[]) = "\t{\n" ++ toJson3 x ++ "\t}\n" ++ toJson2 []
 toJson2 (x:xs) = "\t{\n" ++ toJson3 x ++ "\t},\n" ++ toJson2 xs
 
-toJson :: String -> [(String, (Double, Double, Double, Double, Double, Double))] -> IO ()
-toJson path lst = writeFile path $ "[\n" ++ (toJson2 $ foldl (zipAll fieldsName) [] $ minmax allMax lst)
+toJson :: String -> [String] -> [(String, (Double, Double, Double, Double, Double, Double))] -> IO ()
+toJson path fieldsName lst = writeFile path $ "[\n" ++ (toJson2 $ foldl (zipAll fieldsName) [] $ minmax allMax lst) ++ "]"
     where -- transform all Double to String
         newLst = map (\(_, tupple) -> tupple) lst
         allMax = foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (max acA a, max acB b, max acC c, max acD d, max acE e, max acF f)) newLst
-        fieldsName = ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"]
         zipAll :: [String] -> [[(String, String)]] -> (String, (String, String, String, String, String, String)) -> [[(String, String)]]
         zipAll strs acc (name, tupple) = (zip strs $ name : (tuppleToList tupple)) : acc
 
-benchmark :: IO ()
-benchmark = do
+toJsonV2 :: [(String, [[(String, String)]])] -> String
+toJsonV2 [] = []
+toJsonV2 ((name, lst):[]) = "{\n\"name\": \"" ++ name ++ "\",\n\"values\": [\n" ++ toJson2 lst ++ "]\n}\n"
+toJsonV2 ((name, lst):xs) = "{\n\"name\": \"" ++ name ++ "\",\n\"values\": [\n" ++ toJson2 lst ++ "]\n},\n" ++ toJsonV2 xs 
+
+makeAverage :: IO ()
+makeAverage = do
     (_, res2) <- parse "MapSolved/Map3x3"
     let allMaps = generateMap 3 2 res2
     let zipped = zip (repeat (aStar2 res2 (algorithmFunction (+) manhattan res2))) allMaps
@@ -110,7 +118,103 @@ benchmark = do
     let av3 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
     let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
     let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
-    toJson "chart/data.json" [("Manhattan", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4), ("Dijkstra", av5)]
+    toJson "chart/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("Manhattan", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4), ("Dijkstra", av5)]
+
+
+oui :: [String] -> [(Double, Double, Double, Double, Double, Double)] -> [(String, [[(String, String)]])]
+oui names lst = oui4 $ oui3 $ oui2 $ map (\(name, lst) -> (name, map (\(name, x) -> (name, show x)) {--$ reverse $ sortOn (\(_, x) -> x)--} $ zip algoName lst))$ zip names [tC, mC, st, bD, t, c]
+    where
+        oui2 = map (\(name, lst) -> (name, map (\(name2, x) -> [("value", x), ("label", name2)]) lst))
+        oui3 = map (\(name, lst) -> (name, zipWith (\index lst2 -> ("index", show $ index) : lst2) (map (/10) [4 .. ]) lst))
+        oui4 = map (\(name, lst) -> (name, zipWith (\index lst2 -> ("fill", index) : lst2) colors lst))
+        algoName = ["AStar", "AStar3", "AStar8", "MultStar"]
+        colors = ["#231F20", "#403437", "#53363C", "#5E2C3A", "#660E34", "#7D3A4D", "#96606B", "#B28A91", "#D3BCBF", "#EDE4E5"]
+        tC = map (\(x, _, _, _, _, _) -> x) lst
+        mC = map (\(_, x, _, _, _, _) -> x) lst
+        st = map (\(_, _, x, _, _, _) -> x) lst
+        bD = map (\(_, _, _, x, _, _) -> x) lst
+        t = map (\(_, _, _, _, x, _) -> x) lst
+        c = map (\(_, _, _, _, _, x) -> x) lst
+
+makeBarChart :: Heuristic -> String -> IO ()
+makeBarChart hf name = do
+    (_, res2) <- parse "MapSolved/Map3x3"
+    let allMaps = generateMap 3 10 res2
+    let zipped = zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
+    let zipped2 = zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
+    let zipped3 = zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
+    let zipped4 = zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
+    lst  <- foldl benchOnMap initBench zipped
+    lst2 <- foldl benchOnMap initBench zipped2
+    lst3 <- foldl benchOnMap initBench zipped3
+    lst4 <- foldl benchOnMap initBench zipped4
+    -- [timeComplexity, MemoryComplexity, Strokes, BranchDepth, Time, complexity], acF
+    let av1 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
+    let av2 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst2
+    let av3 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
+    let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
+    let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] [av1, av2, av3, av4]
+    writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
+    -- toJson "chart/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("AStar", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4)]
+
+oui2 :: [(String, [(Double, Double)])] -> [[(String, String)]]
+oui2 [] = []
+oui2 ((name, lst):xs) = [("name", name), ("timeScope", show timeList), ("complexityScope", show compList)] : oui2 xs
+    where
+        timeList = map (\(time, _) -> time) lst
+        compList = map (\(_, comp) -> comp) lst
+
+makeLineChart :: Heuristic -> String -> IO ()
+makeLineChart hf name = do
+    (_, res2) <- parse "MapSolved/Map3x3"
+    let allMaps = generateMap 3 10 res2
+    let zipped = zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
+    let zipped2 = zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
+    let zipped3 = zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
+    let zipped4 = zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
+    lst  <- foldl benchOnMap initBench zipped
+    lst2 <- foldl benchOnMap initBench zipped2
+    lst3 <- foldl benchOnMap initBench zipped3
+    lst4 <- foldl benchOnMap initBench zipped4
+    let newLst1 = ("AStar", map (\(_, _, _, _, t, c) -> (t, c)) lst)
+    let newLst2 = ("AStar3", map (\(_, _, _, _, t, c) -> (t, c)) lst2)
+    let newLst3 = ("AStar8", map (\(_, _, _, _, t, c) -> (t, c)) lst3)
+    let newLst4 = ("MultStar", map (\(_, _, _, _, t, c) -> (t, c)) lst4)
+    -- [timeComplexity, MemoryComplexity, Strokes, BranchDepth, Time, complexity], acF
+    let ret = oui2 [newLst1, newLst2, newLst3, newLst4]
+    writeFile name $ "[\n" ++ toJson2 ret ++ "]"
+    -- writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
+
+makeDepthGraph :: Heuristic -> String -> IO()
+makeDepthGraph hf name = do
+    (_, res) <- parse "MapSolved/Map3x3"
+    (_, grill) <- parse "test-files/valids/01-map"
+    let (moves, acts, _, _) = aStarBench grill res (algorithmFunction (+) hf res)
+    let newActs = Actions.insert (foldl (\tree act -> Actions.insert tree act False) Actions.new acts) moves True
+    writeFile name (show newActs)
+
+benchmark :: IO ()
+benchmark = do
+    -- makeBarChart (wManhattan 1) "chart/manhattan/bar.json"
+    -- makeDepthGraph (wManhattan 1) "chart/manhattan/depth.json"
+    -- makeLineChart (wManhattan 1) "chart/manhattan/line.json"
+    -- 
+    -- makeBarChart (wManhattan 3) "chart/manhattan3/bar.json"
+    -- makeDepthGraph (wManhattan 3) "chart/manhattan3/depth.json"
+    -- makeLineChart (wManhattan 3) "chart/manhattan3/line.json"
+-- 
+    -- makeBarChart (wManhattan 8) "chart/manhattan8/bar.json"
+    -- makeDepthGraph (wManhattan 8) "chart/manhattan8/depth.json"
+    -- makeLineChart (wManhattan 8) "chart/manhattan8/line.json"
+-- 
+    -- makeBarChart euclidean "chart/euclidean/bar.json"
+    -- makeDepthGraph euclidean "chart/euclidean/depth.json"
+    -- makeLineChart euclidean "chart/euclidean/line.json"
+
+    makeBarChart dijkstra "chart/dijkstra/bar.json"
+    makeDepthGraph dijkstra "chart/dijkstra/depth.json"
+    makeLineChart dijkstra "chart/dijkstra/line.json"
+
     -- let (extMin, extMax) = extremes lst $ zip (map (\(a, b, c, d) -> a + b + c + d) $ map (minmax $ generateMax lst) lst) [0..]
     -- let (extMin2, extMax2) = extremes lst2 $ zip (map (\(a, b, c, d) -> a + b + c + d) $ map (minmax $ generateMax lst2) lst2) [0..]
     -- let (extMin3, extMax3) = extremes lst3 $ zip (map (\(a, b, c, d) -> a + b + c + d) $ map (minmax $ generateMax lst3) lst3) [0..]

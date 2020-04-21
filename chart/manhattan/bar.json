@@ -25,6 +25,12 @@
 		"index": "0.7",
 		"value": "3627.42",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "4407.23",
+		"label": "AverageStar"
 	}
 ]
 },
@@ -54,6 +60,12 @@
 		"index": "0.7",
 		"value": "1608.11",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "1933.34",
+		"label": "AverageStar"
 	}
 ]
 },
@@ -83,6 +95,12 @@
 		"index": "0.7",
 		"value": "20.94",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "20.62",
+		"label": "AverageStar"
 	}
 ]
 },
@@ -112,6 +130,12 @@
 		"index": "0.7",
 		"value": "11.976106783886566",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "12.178167290571277",
+		"label": "AverageStar"
 	}
 ]
 },
@@ -121,26 +145,32 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "3.325926000000002e-2",
+		"value": "3.3118460000000016e-2",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "1.8624579999999998e-2",
+		"value": "1.8339720000000004e-2",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "7.564450000000001e-3",
+		"value": "7.516039999999999e-3",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "3.059923000000003e-2",
+		"value": "2.986877e-2",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "2.4363900000000004e-2",
+		"label": "AverageStar"
 	}
 ]
 },
@@ -150,26 +180,32 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "0.8273163200000008",
+		"value": "0.8265098700000002",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "0.56190891",
+		"value": "0.5534195200000002",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "0.28466421000000003",
+		"value": "0.2823923700000001",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "0.71726205",
+		"value": "0.7004870700000001",
 		"label": "MultStar"
+	},
+	{
+		"fill": "#660E34",
+		"index": "0.8",
+		"value": "0.5887476499999998",
+		"label": "AverageStar"
 	}
 ]
 }

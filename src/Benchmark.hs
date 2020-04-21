@@ -29,7 +29,7 @@ import Data.List.Split
     Double          -> Number of moves
     Double          -> time
 --}
-algo = [("aStar", (+)), ("wAStar", (\x y -> x + 8 * y)), ("multStar", (*))]
+algo = [("aStar", (+)), ("wAStar", (\x y -> x + 8 * y)), ("multStar", (*)), ("averageStar", (\x y -> ((x + y) `div` 2) ^ 2))]
 heuristic = [("manhattan", manhattan), ("wManhattan", wManhattan 4), ("euclidean", euclidean), ("wEuclidean", wEuclidean 4), ("dijkstra", dijkstra)]
 
 
@@ -130,7 +130,7 @@ toJsonV2 ((name, lst):xs) = "{\n\"name\": \"" ++ name ++ "\",\n\"values\": [\n" 
 makeAverage :: Heuristic -> IO ()
 makeAverage hf = do
     (_, res2) <- parse "MapSolved/Map3x3"
-    let allMaps = generateMap 3 2 res2
+    let allMaps = generateMap 3 10 res2
     let zipped = zip (repeat (aStar2 res2 (algorithmFunction (+) manhattan res2))) allMaps
     let zipped2 = zip (repeat (aStar2 res2 (algorithmFunction (+) (wManhattan 3) res2))) allMaps
     let zipped3 = zip (repeat (aStar2 res2 (algorithmFunction (+) (wManhattan 8) res2))) allMaps
@@ -159,7 +159,7 @@ oui names lst = oui4 $ oui3 $ oui2 $ map (\(name, lst) -> (name, map (\(name, x)
         oui2 = map (\(name, lst) -> (name, map (\(name2, x) -> [("value", x), ("label", name2)]) lst))
         oui3 = map (\(name, lst) -> (name, zipWith (\index lst2 -> ("index", show $ index) : lst2) (map (/10) [4 .. ]) lst))
         oui4 = map (\(name, lst) -> (name, zipWith (\index lst2 -> ("fill", index) : lst2) colors lst))
-        algoName = ["AStar", "AStar3", "AStar8", "MultStar"]
+        algoName = ["AStar", "AStar3", "AStar8", "MultStar", "AverageStar"]
         colors = ["#231F20", "#403437", "#53363C", "#5E2C3A", "#660E34", "#7D3A4D", "#96606B", "#B28A91", "#D3BCBF", "#EDE4E5"]
         tC = map (\(x, _, _, _, _, _) -> x) lst
         mC = map (\(_, x, _, _, _, _) -> x) lst
@@ -176,16 +176,19 @@ makeBarChart hf name size = do
     let zipped2 = trace (name ++ ": Generating AStar3 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
     let zipped3 = trace (name ++ ": Generating AStar8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
     let zipped4 = trace (name ++ ":  Generating Multstar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
+    let zipped5 = trace (name ++ ":  Generating AverageStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> ((x + y) `div` 2) ^ 2) hf res2))) allMaps
     lst  <- foldl benchOnMap initBench zipped
     lst2 <- foldl benchOnMap initBench zipped2
     lst3 <- foldl benchOnMap initBench zipped3
     lst4 <- foldl benchOnMap initBench zipped4
+    lst5 <- foldl benchOnMap initBench zipped5
     -- [timeComplexity, MemoryComplexity, Strokes, BranchDepth, Time, complexity], acF
     let av1 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
     let av2 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst2
     let av3 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
     let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
-    let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] [av1, av2, av3, av4]
+    let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
+    let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] [av1, av2, av3, av4, av5]
     writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
     -- toJson "chart/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("AStar", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4)]
 
@@ -204,16 +207,19 @@ makeLineChart hf name size = do
     let zipped2 = trace (name ++ ": Generating AStar3 0/" ++ show size)  $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
     let zipped3 = trace (name ++ ": Generating AStar8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
     let zipped4 = trace (name ++ ":  Generating Multstar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
+    let zipped5 = trace (name ++ ":  Generating AverageStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> ((x + y) `div` 2) ^ 2) hf res2))) allMaps
     lst  <- foldl benchOnMap initBench zipped
     lst2 <- foldl benchOnMap initBench zipped2
     lst3 <- foldl benchOnMap initBench zipped3
     lst4 <- foldl benchOnMap initBench zipped4
+    lst5 <- foldl benchOnMap initBench zipped5
     let newLst1 = ("AStar", map (\(_, _, _, _, t, c) -> (t, c)) lst)
     let newLst2 = ("AStar3", map (\(_, _, _, _, t, c) -> (t, c)) lst2)
     let newLst3 = ("AStar8", map (\(_, _, _, _, t, c) -> (t, c)) lst3)
     let newLst4 = ("MultStar", map (\(_, _, _, _, t, c) -> (t, c)) lst4)
+    let newLst5 = ("AverageStar", map (\(_, _, _, _, t, c) -> (t, c)) lst5)
     -- [timeComplexity, MemoryComplexity, Strokes, BranchDepth, Time, complexity], acF
-    let ret = oui2 [newLst1, newLst2, newLst3, newLst4]
+    let ret = oui2 [newLst1, newLst2, newLst3, newLst4, newLst5]
     writeFile name $ "[\n" ++ toJson2 ret ++ "]"
     -- writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
 
@@ -229,16 +235,16 @@ regenerate :: IO ()
 regenerate = do
     makeBarChart manhattan "chart/manhattan/bar.json" 100
     makeDepthGraph manhattan "chart/manhattan/depth.json"
-    makeLineChart manhattan "chart/manhattan/line.json" 100
+    makeLineChart manhattan "chart/manhattan/line.json" 50
     makeBarChart (wManhattan 3) "chart/manhattan3/bar.json" 100
     makeDepthGraph (wManhattan 3) "chart/manhattan3/depth.json"
-    makeLineChart (wManhattan 3) "chart/manhattan3/line.json" 100
+    makeLineChart (wManhattan 3) "chart/manhattan3/line.json" 50
     makeBarChart (wManhattan 8) "chart/manhattan8/bar.json" 100
     makeDepthGraph (wManhattan 8) "chart/manhattan8/depth.json"
-    makeLineChart (wManhattan 8) "chart/manhattan8/line.json" 100
+    makeLineChart (wManhattan 8) "chart/manhattan8/line.json" 50
     makeBarChart euclidean "chart/euclidean/bar.json" 100
     makeDepthGraph euclidean "chart/euclidean/depth.json"
-    makeLineChart euclidean "chart/euclidean/line.json" 100
+    makeLineChart euclidean "chart/euclidean/line.json" 50
     makeBarChart dijkstra "chart/dijkstra/bar.json" 10
     makeDepthGraph dijkstra "chart/dijkstra/depth.json"
     makeLineChart dijkstra "chart/dijkstra/line.json" 10
@@ -280,11 +286,11 @@ benchmark = do
                 | x == "euclidean" = do
                     makeBarChart euclidean "chart/euclidean/bar.json" 100
                     makeDepthGraph euclidean "chart/euclidean/depth.json"
-                    makeLineChart euclidean "chart/euclidean/line.json" 100
+                    makeLineChart euclidean "chart/euclidean/line.json" 50
                 | x == "manhattan" = do
                     makeBarChart (wManhattan 1) "chart/manhattan/bar.json" 100
                     makeDepthGraph (wManhattan 1) "chart/manhattan/depth.json"
-                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 100
+                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 50
                 | otherwise = return ()
             printChart (x:x1:xs)
                 | x == "dijkstra" = do
@@ -295,25 +301,25 @@ benchmark = do
                 | x == "euclidean" && length sec /= length x1 = do
                     makeBarChart euclidean "chart/euclidean/bar.json" 100
                     makeDepthGraph euclidean "chart/euclidean/depth.json"
-                    makeLineChart euclidean "chart/euclidean/line.json" 100
+                    makeLineChart euclidean "chart/euclidean/line.json" 50
                     printChart $ x1:xs
                 | x == "euclidean" = do
                     let nb = read sec :: Int
                     makeBarChart (wEuclidean nb) "chart/tmp/bar.json" 100
                     makeDepthGraph (wEuclidean nb) "chart/tmp/depth.json"
-                    makeLineChart (wEuclidean nb) "chart/tmp/line.json" 100
+                    makeLineChart (wEuclidean nb) "chart/tmp/line.json" 50
                     makeAverage (wEuclidean nb)
                     printChart xs
                 | x == "manhattan" && length sec /= length x1 = do
                     makeBarChart (wManhattan 1) "chart/manhattan/bar.json" 100
                     makeDepthGraph (wManhattan 1) "chart/manhattan/depth.json"
-                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 100
+                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 50
                     printChart $ x1:xs
                 | x == "manhattan" = do
                     let nb = read sec :: Int
                     makeBarChart (wManhattan nb) "chart/tmp/bar.json" 100
                     makeDepthGraph (wManhattan nb) "chart/tmp/depth.json"
-                    makeLineChart (wManhattan nb) "chart/tmp/line.json" 100
+                    makeLineChart (wManhattan nb) "chart/tmp/line.json" 50
                     makeAverage (wManhattan nb)
                     printChart xs
                 | otherwise = trace("Error Parsing: " ++ x) $ printChart $ x1:xs

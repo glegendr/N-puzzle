@@ -1,56 +1,56 @@
 [
 	{
 		"name": "TemporaryValue",
-		"timeComplexity": "5.727810336850219",
-		"memoryComplexity": "5.788853100935177",
+		"timeComplexity": "5.802200647883304",
+		"memoryComplexity": "5.841540122246391",
 		"strokes": "10.0",
 		"branchDepth": "10.0",
-		"time": "8.701123867173871e-2",
-		"complexity": "1.1020037412871604"
+		"time": "0.13010792287616993",
+		"complexity": "1.4356180306240693"
 	},
 	{
 		"name": "Dijkstra",
-		"timeComplexity": "10.0",
+		"timeComplexity": "10.000000000000002",
 		"memoryComplexity": "10.0",
-		"strokes": "4.145243009945581",
-		"branchDepth": "9.173958166252534",
+		"strokes": "4.641015625",
+		"branchDepth": "9.74740870903605",
 		"time": "10.0",
 		"complexity": "10.0"
 	},
 	{
 		"name": "Euclidean",
-		"timeComplexity": "7.11262999805671",
-		"memoryComplexity": "7.284413176275061",
-		"strokes": "4.145243009945581",
-		"branchDepth": "5.746120874474279",
-		"time": "0.3407043448259272",
-		"complexity": "2.015781830898299"
+		"timeComplexity": "7.1543882474982174",
+		"memoryComplexity": "7.2928084372727495",
+		"strokes": "4.641015625",
+		"branchDepth": "6.121934915673051",
+		"time": "0.5552557885783954",
+		"complexity": "2.7006252234200763"
 	},
 	{
 		"name": "Manhattan8",
-		"timeComplexity": "5.7049162878171265",
-		"memoryComplexity": "5.764755288988156",
+		"timeComplexity": "5.778343345443862",
+		"memoryComplexity": "5.816272315526316",
 		"strokes": "10.0",
-		"branchDepth": "9.922536209419299",
-		"time": "4.07858706130812e-2",
-		"complexity": "0.5880683784452292"
+		"branchDepth": "9.90647013661731",
+		"time": "5.77127160840869e-2",
+		"complexity": "0.7549642264489639"
 	},
 	{
 		"name": "Manhattan3",
-		"timeComplexity": "6.549535529201562",
-		"memoryComplexity": "6.705325828934091",
-		"strokes": "7.9283167573653595",
-		"branchDepth": "8.102193434530307",
-		"time": "0.1494898993082821",
-		"complexity": "1.4362381856782174"
+		"timeComplexity": "6.360995692690298",
+		"memoryComplexity": "6.478109349176345",
+		"strokes": "7.5472656250000005",
+		"branchDepth": "8.013192429653335",
+		"time": "0.13349234415738395",
+		"complexity": "1.270310653063195"
 	},
 	{
 		"name": "Manhattan",
-		"timeComplexity": "6.736579303120047",
-		"memoryComplexity": "6.967700886421894",
-		"strokes": "4.145243009945581",
-		"branchDepth": "5.556651747775019",
-		"time": "0.20462562764569417",
-		"complexity": "1.4310817738450108"
+		"timeComplexity": "6.705072312250821",
+		"memoryComplexity": "6.877068817520068",
+		"strokes": "4.641015625",
+		"branchDepth": "5.841176550225711",
+		"time": "0.22000891540491035",
+		"complexity": "1.5315345916125438"
 	}
 ]

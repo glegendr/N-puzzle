@@ -16,7 +16,7 @@ flags = [
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
-    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps or create chart when use benchmark:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
@@ -137,6 +137,7 @@ dispatchAlgo x
     | (head algoArrow) == "wastar" = (\x y -> x + (checkWeight $ tail algoArrow) * y)
     | str == "multstar" = (*)
     | str == "minimizedastar" = (-)
+    | str == "averagestar" = (\x y -> ((x + y) `div` 2) ^ 2)
     | otherwise = error $ "algorithm \"" ++ x ++ "\" not found"
     where
     str = map toLower x

@@ -5,32 +5,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "9917.33",
+		"value": "2900.24",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "3290.35",
+		"value": "2723.14",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "3370.35",
+		"value": "1629.54",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "3982.64",
+		"value": "2978.48",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "10851.86",
-		"label": "AverageStar"
 	}
 ]
 },
@@ -40,32 +34,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "4005.55",
+		"value": "1315.88",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "1383.85",
+		"value": "1217.08",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "1391.53",
+		"value": "723.9",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "1680.4",
+		"value": "1320.16",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "4255.33",
-		"label": "AverageStar"
 	}
 ]
 },
@@ -75,32 +63,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "20.48",
+		"value": "19.14",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "21.92",
+		"value": "24.18",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "29.3",
+		"value": "34.02",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "20.9",
+		"value": "19.54",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "20.56",
-		"label": "AverageStar"
 	}
 ]
 },
@@ -110,32 +92,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "12.61981302560168",
+		"value": "10.953229984123006",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "15.917831133179604",
+		"value": "17.484839389140426",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "23.988349055692183",
+		"value": "24.66733626642653",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "12.017110750843742",
+		"value": "11.250865423707136",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "12.855863478244286",
-		"label": "AverageStar"
 	}
 ]
 },
@@ -145,32 +121,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "8.363501999999999e-2",
+		"value": "3.4064859999999995e-2",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "3.178534000000001e-2",
+		"value": "4.374711999999999e-2",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "1.8157980000000004e-2",
+		"value": "2.428626e-2",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "2.2510790000000006e-2",
+		"value": "4.452484e-2",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "0.10008855",
-		"label": "AverageStar"
 	}
 ]
 },
@@ -180,32 +150,26 @@
 	{
 		"fill": "#231F20",
 		"index": "0.4",
-		"value": "2.09599276",
+		"value": "0.76866394",
 		"label": "AStar"
 	},
 	{
 		"fill": "#403437",
 		"index": "0.5",
-		"value": "0.82718094",
+		"value": "1.2172053399999998",
 		"label": "AStar3"
 	},
 	{
 		"fill": "#53363C",
 		"index": "0.6",
-		"value": "0.5520674900000002",
+		"value": "0.89402492",
 		"label": "AStar8"
 	},
 	{
 		"fill": "#5E2C3A",
 		"index": "0.7",
-		"value": "0.5618785999999999",
+		"value": "0.9731390599999996",
 		"label": "MultStar"
-	},
-	{
-		"fill": "#660E34",
-		"index": "0.8",
-		"value": "2.3819615899999995",
-		"label": "AverageStar"
 	}
 ]
 }

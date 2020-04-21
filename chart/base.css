@@ -123,6 +123,18 @@ body {
     text-decoration: none;
   }
   
+  .menu-path {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    display: inline-block;
+    width: 16.5%;
+    /* height: 120px; */
+    overflow: hidden;
+    padding: 20px 25px;
+    position: relative;
+    text-decoration: none;
+  }
+
   .menu-item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     color: rgba(255, 255, 255, 0.4);
@@ -133,13 +145,13 @@ body {
     position: relative;
     text-decoration: none;
   }
-  .menu-item:hover, .menu-item:focus {
+  .menu-item:hover, .menu-item:focus, .menu-path:hover, .menu-path:focus {
     background: #FF974F;
   }
-  .menu-item:hover::after, .menu-item:focus::after {
+  .menu-item:hover::after, .menu-item:focus::after, .menu-path:hover::after, .menu-path:focus::after {
     background: linear-gradient(rgba(255, 151, 79, 0), #FF974F 85%);
   }
-  .menu-item::after {
+  .menu-item::after, .menu-path::after {
     background: linear-gradient(rgba(100, 77, 82, 0), #644D52 85%);
     bottom: 0;
     content: "";

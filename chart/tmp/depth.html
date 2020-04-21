@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet" type="text/css" href="../base.css">
+</head>
+<body style="margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;">
+<div class="col">
+  <ol class="menu">
+    <li>
+      <a class="menu-item" href="../index.html">
+        <h3>Home</h3>
+      </a>
+      <a class="menu-description">
+        <h3>Temporary Value</h3>
+        <p>Only you know what is this algorithm</p>
+      </a>
+      <a class="menu-description">
+        <h3>Depth Graphic</h3>
+        <p>This graphic show the depth of all evaluated branches.<br>The differents colors represent each moves as:
+          <p style="color:#b34f6a">Right</p>
+          <p style="color:#51823a">Left</p>
+          <p style="color:#447494">Up</p>
+          <p style="color:#9e6745">Down</p>
+          <p> The Arrival branch is the grey one with red dots. Each dot is a strokes and the length is display at the end of the branch.</p>
+        </p>
+      </a>
+      <a class="menu-item" href="bar.html">
+        <h3>Bar Graphic</h3>
+      </a>
+      <a class="menu-item" href="line.html">
+        <h3>Line Graphic</h3>
+      </a>
+    </li>
+</div>
+<div class="col col--2">
+    <svg id="Temporary" width="1080" height="672"></svg>
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+const jsonArray = [{id: "Temporary", json: "depth.json"}]//, {id: "dijkstra", json: "dijkstra.json"}, {id: "Manhattan8", json: "manhattan8.json"}] 
+
+for (const element of jsonArray) {
+  let svg = d3.select('#' + element.id),
+      width = +svg.attr("width"),
+      height = +svg.attr("height"),
+      g = svg.append("g").attr("transform", "translate(" + (width / 2 ) + "," + (height / 2 + 30)+ ")");
+
+  let tree = d3.tree()
+      .size([2 * Math.PI, 300])
+      .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+  d3.json(element.json, function(error, data) {
+    if (error) throw error;
+
+    let root = tree(d3.hierarchy(data));
+
+    let link = g.selectAll(".link")
+      .data(root.links())
+      .enter().append("path")
+        .attr("class", "link")
+        .style("stroke", function(d) {3
+          let color;
+          switch (d.target.data.name) {
+            case "Right":
+              color = "#b34f6a"
+              break ;
+            case "Left":
+              color = "#51823a"
+              break ;
+            case "Up":
+              color = "#447494"
+              break ;
+            case "Down":
+              color = "#9e6745"
+              break ;
+          }
+          return (d.target.data.finish ? "#cad" : color);
+        })
+        .attr("d", d3.linkRadial()
+            .angle(function(d) { return d.x; })
+            .radius(function(d) { return d.y; }));
+
+    let node = g.selectAll(".node")
+      .data(root.descendants())
+      .enter().append("g")
+        .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
+        .attr("transform", function(d) { return "translate(" + radialPoint(d.x, d.y) + ")"; });
+
+    node.append("circle")
+        .attr("r", function(d) { return (d.data.finish && d.data.name != "None" ? 2.5 : d.children ? 0 : 2.5); })
+        .style("fill", function(d) { return (d.data.finish ? "#f00" : "#555"); });
+    
+    node.append("text")
+      .attr("dy", "0.31em")
+      .attr("x", function(d) { return d.x < Math.PI === !d.children ? 6 : -6; })
+      .attr("text-anchor", function(d) { return d.x < Math.PI === !d.children ? "start" : "end"; })
+      .attr("transform", function(d) { return "rotate(" + (d.x < Math.PI ? d.x - Math.PI / 2 : d.x + Math.PI / 2) * 180 / Math.PI + ")"; })
+      .text(function(d) {
+    			return (d.children ? "" : d.data.finish ? d.data.depth : "")
+  		});
+
+  });
+}
+
+function radialPoint(x, y) {
+  return [(y = +y) * Math.cos(x -= Math.PI / 2), y * Math.sin(x)];
+}
+
+</script></body>
+</html>

@@ -1,0 +1,176 @@
+[
+{
+"name": "TimeComplexity",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "414267.9",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "414267.9",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "414267.9",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "414267.9",
+		"label": "MultStar"
+	}
+]
+},
+{
+"name": "MemoryComplexity",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "94489.0",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "94489.0",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "94489.0",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "94489.0",
+		"label": "MultStar"
+	}
+]
+},
+{
+"name": "Strokes",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "21.8",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "21.8",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "21.8",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "21.8",
+		"label": "MultStar"
+	}
+]
+},
+{
+"name": "BranchDepth",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "21.97846331704676",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "21.97846331704676",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "21.97846331704676",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "21.97846331704676",
+		"label": "MultStar"
+	}
+]
+},
+{
+"name": "Time",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "10.4673251",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "12.5403667",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "21.8392101",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "39.2402678",
+		"label": "MultStar"
+	}
+]
+},
+{
+"name": "Complexity",
+"values": [
+	{
+		"fill": "#231F20",
+		"index": "0.4",
+		"value": "243.32877040000002",
+		"label": "AStar"
+	},
+	{
+		"fill": "#403437",
+		"index": "0.5",
+		"value": "302.2462212",
+		"label": "AStar3"
+	},
+	{
+		"fill": "#53363C",
+		"index": "0.6",
+		"value": "456.83452070000004",
+		"label": "AStar8"
+	},
+	{
+		"fill": "#5E2C3A",
+		"index": "0.7",
+		"value": "906.9389752",
+		"label": "MultStar"
+	}
+]
+}
+]

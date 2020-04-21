@@ -16,8 +16,8 @@ flags = [
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
-    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps or create chart when use benchmark:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2> -- only <-v> when benchmarking")
-    ,("-b", "--benchmark","\t\t\t   Launch benchmarks")
+    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps or create chart when use benchmark:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
@@ -69,20 +69,6 @@ getAFlag (x:xs)
     | x == "-a" || x == "--algorithm" = error $ "No function provided after " ++ x ++ " flag"
     | head eq == "-a" || head eq == "--algorithm" = dispatchAlgo $ last eq
     | otherwise = getAFlag xs
-    where eq = splitOn "=" x
-
-
-getVFlag :: [String] -> String
-getVFlag [] = "partial"
-getVFlag (x:x1:xs) 
-    | x == "-v" || x == "--visual" = x1
-    | head eq == "-v" || head eq == "--visual" = last eq
-    | otherwise = getVFlag (x1:xs)
-    where eq = splitOn "=" x
-getVFlag (x:xs)
-    | x == "-v" || x == "--visual" = error $ "No number provided after " ++ x ++ " flag"
-    | head eq == "-v" || head eq == "--visual" = last eq
-    | otherwise = getVFlag xs
     where eq = splitOn "=" x
 
 leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String)

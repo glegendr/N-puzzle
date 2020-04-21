@@ -8,6 +8,10 @@ import Benchmark
 import Actions
 -- import Debug.Trace
 
+isThatReal :: Grill -> Grill -> [Act] -> Bool
+isThatReal grill res [] = grill == res
+isThatReal grill res (x:xs) = isThatReal (moveAct grill x) res xs
+
 main = do
     args <- getArgs
     if args == []

@@ -150,7 +150,7 @@ makeAverage hf = do
     let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
     let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
     let av6 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst6
-    toJson "chart/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("Manhattan", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4), ("Dijkstra", av5), ("TemporaryValue", av6)]
+    toJson "docs/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("Manhattan", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4), ("Dijkstra", av5), ("TemporaryValue", av6)]
 
 
 oui :: [String] -> [(Double, Double, Double, Double, Double, Double)] -> [(String, [[(String, String)]])]
@@ -190,7 +190,7 @@ makeBarChart hf name size = do
     let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
     let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] [av1, av2, av3, av4, av5]
     writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
-    -- toJson "chart/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("AStar", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4)]
+    -- toJson "docs/data.json" ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("AStar", av1), ("Manhattan3", av2), ("Manhattan8", av3), ("Euclidean", av4)]
 
 oui2 :: [(String, [(Double, Double)])] -> [[(String, String)]]
 oui2 [] = []
@@ -233,21 +233,21 @@ makeDepthGraph hf name = do
 
 regenerate :: IO ()
 regenerate = do
-    makeBarChart manhattan "chart/manhattan/bar.json" 100
-    makeDepthGraph manhattan "chart/manhattan/depth.json"
-    makeLineChart manhattan "chart/manhattan/line.json" 50
-    makeBarChart (wManhattan 3) "chart/manhattan3/bar.json" 100
-    makeDepthGraph (wManhattan 3) "chart/manhattan3/depth.json"
-    makeLineChart (wManhattan 3) "chart/manhattan3/line.json" 50
-    makeBarChart (wManhattan 8) "chart/manhattan8/bar.json" 100
-    makeDepthGraph (wManhattan 8) "chart/manhattan8/depth.json"
-    makeLineChart (wManhattan 8) "chart/manhattan8/line.json" 50
-    makeBarChart euclidean "chart/euclidean/bar.json" 100
-    makeDepthGraph euclidean "chart/euclidean/depth.json"
-    makeLineChart euclidean "chart/euclidean/line.json" 50
-    makeBarChart dijkstra "chart/dijkstra/bar.json" 10
-    makeDepthGraph dijkstra "chart/dijkstra/depth.json"
-    makeLineChart dijkstra "chart/dijkstra/line.json" 10
+    makeBarChart manhattan "docs/manhattan/bar.json" 100
+    makeDepthGraph manhattan "docs/manhattan/depth.json"
+    makeLineChart manhattan "docs/manhattan/line.json" 50
+    makeBarChart (wManhattan 3) "docs/manhattan3/bar.json" 100
+    makeDepthGraph (wManhattan 3) "docs/manhattan3/depth.json"
+    makeLineChart (wManhattan 3) "docs/manhattan3/line.json" 50
+    makeBarChart (wManhattan 8) "docs/manhattan8/bar.json" 100
+    makeDepthGraph (wManhattan 8) "docs/manhattan8/depth.json"
+    makeLineChart (wManhattan 8) "docs/manhattan8/line.json" 50
+    makeBarChart euclidean "docs/euclidean/bar.json" 100
+    makeDepthGraph euclidean "docs/euclidean/depth.json"
+    makeLineChart euclidean "docs/euclidean/line.json" 50
+    makeBarChart dijkstra "docs/dijkstra/bar.json" 10
+    makeDepthGraph dijkstra "docs/dijkstra/depth.json"
+    makeLineChart dijkstra "docs/dijkstra/line.json" 10
     makeAverage (wManhattan 99)
     exitWith ExitSuccess
 
@@ -280,46 +280,46 @@ benchmark = do
             printChart [] = return ()
             printChart (x:[])
                 | x == "dijkstra" = do
-                    makeDepthGraph dijkstra "chart/dijkstra/depth.json"
-                    makeBarChart dijkstra "chart/dijkstra/bar.json" 10
-                    makeLineChart dijkstra "chart/dijkstra/line.json" 10
+                    makeDepthGraph dijkstra "docs/dijkstra/depth.json"
+                    makeBarChart dijkstra "docs/dijkstra/bar.json" 10
+                    makeLineChart dijkstra "docs/dijkstra/line.json" 10
                 | x == "euclidean" = do
-                    makeBarChart euclidean "chart/euclidean/bar.json" 100
-                    makeDepthGraph euclidean "chart/euclidean/depth.json"
-                    makeLineChart euclidean "chart/euclidean/line.json" 50
+                    makeBarChart euclidean "docs/euclidean/bar.json" 100
+                    makeDepthGraph euclidean "docs/euclidean/depth.json"
+                    makeLineChart euclidean "docs/euclidean/line.json" 50
                 | x == "manhattan" = do
-                    makeBarChart (wManhattan 1) "chart/manhattan/bar.json" 100
-                    makeDepthGraph (wManhattan 1) "chart/manhattan/depth.json"
-                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 50
+                    makeBarChart (wManhattan 1) "docs/manhattan/bar.json" 100
+                    makeDepthGraph (wManhattan 1) "docs/manhattan/depth.json"
+                    makeLineChart (wManhattan 1) "docs/manhattan/line.json" 50
                 | otherwise = return ()
             printChart (x:x1:xs)
                 | x == "dijkstra" = do
-                    makeDepthGraph dijkstra "chart/dijkstra/depth.json"
-                    makeBarChart dijkstra "chart/dijkstra/bar.json" 10
-                    makeLineChart dijkstra "chart/dijkstra/line.json" 10
+                    makeDepthGraph dijkstra "docs/dijkstra/depth.json"
+                    makeBarChart dijkstra "docs/dijkstra/bar.json" 10
+                    makeLineChart dijkstra "docs/dijkstra/line.json" 10
                     printChart $ x1:xs
                 | x == "euclidean" && length sec /= length x1 = do
-                    makeBarChart euclidean "chart/euclidean/bar.json" 100
-                    makeDepthGraph euclidean "chart/euclidean/depth.json"
-                    makeLineChart euclidean "chart/euclidean/line.json" 50
+                    makeBarChart euclidean "docs/euclidean/bar.json" 100
+                    makeDepthGraph euclidean "docs/euclidean/depth.json"
+                    makeLineChart euclidean "docs/euclidean/line.json" 50
                     printChart $ x1:xs
                 | x == "euclidean" = do
                     let nb = read sec :: Int
-                    makeBarChart (wEuclidean nb) "chart/tmp/bar.json" 100
-                    makeDepthGraph (wEuclidean nb) "chart/tmp/depth.json"
-                    makeLineChart (wEuclidean nb) "chart/tmp/line.json" 50
+                    makeBarChart (wEuclidean nb) "docs/tmp/bar.json" 100
+                    makeDepthGraph (wEuclidean nb) "docs/tmp/depth.json"
+                    makeLineChart (wEuclidean nb) "docs/tmp/line.json" 50
                     makeAverage (wEuclidean nb)
                     printChart xs
                 | x == "manhattan" && length sec /= length x1 = do
-                    makeBarChart (wManhattan 1) "chart/manhattan/bar.json" 100
-                    makeDepthGraph (wManhattan 1) "chart/manhattan/depth.json"
-                    makeLineChart (wManhattan 1) "chart/manhattan/line.json" 50
+                    makeBarChart (wManhattan 1) "docs/manhattan/bar.json" 100
+                    makeDepthGraph (wManhattan 1) "docs/manhattan/depth.json"
+                    makeLineChart (wManhattan 1) "docs/manhattan/line.json" 50
                     printChart $ x1:xs
                 | x == "manhattan" = do
                     let nb = read sec :: Int
-                    makeBarChart (wManhattan nb) "chart/tmp/bar.json" 100
-                    makeDepthGraph (wManhattan nb) "chart/tmp/depth.json"
-                    makeLineChart (wManhattan nb) "chart/tmp/line.json" 50
+                    makeBarChart (wManhattan nb) "docs/tmp/bar.json" 100
+                    makeDepthGraph (wManhattan nb) "docs/tmp/depth.json"
+                    makeLineChart (wManhattan nb) "docs/tmp/line.json" 50
                     makeAverage (wManhattan nb)
                     printChart xs
                 | otherwise = trace("Error Parsing: " ++ x) $ printChart $ x1:xs

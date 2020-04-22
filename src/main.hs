@@ -23,7 +23,7 @@ main = do
     let (moves, acts, time, mem) = aStarBench grill res (algorithmFunction af hf res)
     let newActs = Actions.insert (foldl (\tree act -> Actions.insert tree act False) Actions.new acts) moves True
     printVisu grill res visu $ reverse moves
-    writeFile "chart/oui.json" (show newActs)
+    -- writeFile "docs/oui.json" (show newActs)
     putStrLn $ "Time Complexity: " ++ (show time)
     putStrLn $ "Memory Complexity: " ++ (show mem)
     putStrLn $ "Number of moves: " ++ (show (length moves))

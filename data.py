@@ -2,10 +2,10 @@ import http.server
 import socketserver
 import os
 
-PORT = 8080
+PORT = 8000
 
 web_dir = os.path.join(os.path.dirname(__file__), 'web')
-os.chdir("chart")
+os.chdir("docs")
 
 Handler = http.server.SimpleHTTPRequestHandler
 httpd = socketserver.TCPServer(("", PORT), Handler)

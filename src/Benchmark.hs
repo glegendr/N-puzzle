@@ -129,33 +129,50 @@ toJsonV2 [] = []
 toJsonV2 ((name, lst):[]) = "{\n\"name\": \"" ++ name ++ "\",\n\"values\": [\n" ++ toJson2 lst ++ "]\n}\n"
 toJsonV2 ((name, lst):xs) = "{\n\"name\": \"" ++ name ++ "\",\n\"values\": [\n" ++ toJson2 lst ++ "]\n},\n" ++ toJsonV2 xs 
 
-generateList :: [[(Double, Double, Double, Double, Double, Double)]] -> Heuristic -> String -> Int -> IO [[(Double, Double, Double, Double, Double, Double)]]
-generateList lst _ _ _
-    | length lst == 6 = return lst
-generateList _ hf name size = do
-    (_, res2) <- parse "MapSolved/Map3x3"
-    let allMaps = generateMap 3 size res2
-    let zipped = trace (name ++ ": Generating Manhattan 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) manhattan res2))) allMaps
-    let zipped2 = trace (name ++ ": Generating Manhattan3 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) (wManhattan 3) res2))) allMaps
-    let zipped3 = trace (name ++ ": Generating Manhattan8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) (wManhattan 8) res2))) allMaps
-    let zipped4 = trace (name ++ ": Generating Euclidean 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) euclidean res2))) allMaps
-    let zipped5 = trace (name ++ ": Generating Dijkstra 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) dijkstra res2))) allMaps
-    let zipped6 = trace (name ++ ": Generating Tmp 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
+generateAverageList :: Heuristic -> Int -> [Grill] -> String -> Grill -> IO [(Double, Double, Double, Double, Double, Double)]
+generateAverageList hf size allMaps name res2 = do
+    let zipped = trace (name ++ ": Generating AStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
+    let zipped2 = trace (name ++ ": Generating AStar3 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
+    let zipped3 = trace (name ++ ": Generating AStar8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
+    let zipped4 = trace (name ++ ":  Generating Multstar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
+    let zipped5 = trace (name ++ ":  Generating AverageStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> ((x + y) `div` 2) ^ 2) hf res2))) allMaps
     lst  <- foldl benchOnMap initBench zipped
     lst2 <- foldl benchOnMap initBench zipped2
     lst3 <- foldl benchOnMap initBench zipped3
     lst4 <- foldl benchOnMap initBench zipped4
     lst5 <- foldl benchOnMap initBench zipped5
-    lst6 <- foldl benchOnMap initBench zipped6
-    return [lst, lst2, lst3, lst4, lst5, lst6]
+    let av1 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
+    let av2 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst2
+    let av3 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
+    let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
+    let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
+    return [av1, av2, av3, av4, av5]
 
-makeAverage :: Heuristic -> [[(Double, Double, Double, Double, Double, Double)]] -> IO ()
-makeAverage hf lst = do
-    let size = 40
+generateList :: [(Double, Double, Double, Double, Double, Double)] -> Heuristic -> String -> Int -> IO [(Double, Double, Double, Double, Double, Double)]
+generateList lst _ _ _
+    | length lst == 6 = return lst
+generateList _ hf name size = do
+    (_, res2) <- parse "MapSolved/Map3x3"
+    let allMaps = generateMap 3 size res2
+    lst <- trace ("Manhattan:") $ generateAverageList manhattan size allMaps name res2
+    let av1 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
+    lst2 <- trace ("Manhattan3:") $ generateAverageList (wManhattan 3) size allMaps name res2
+    let av2 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst2
+    lst3 <- trace ("Manhattan8:") $ generateAverageList (wManhattan 8) size allMaps name res2
+    let av3 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
+    lst4 <- trace ("Euclidean:") $ generateAverageList euclidean size allMaps name res2
+    let av4 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
+    lst5 <- trace ("Dijkstra:") $ generateAverageList dijkstra size allMaps name res2
+    let av5 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
+    lst6 <- trace ("Temporary:") $ generateAverageList hf size allMaps name res2
+    let av6 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst6
+    return [av1, av2, av3, av4, av5, av6]
+
+makeAverage :: Heuristic -> [(Double, Double, Double, Double, Double, Double)] -> Int -> IO ()
+makeAverage hf lst size = do
     let name = "docs/data.json"
     newLst <- generateList lst hf name size
-    let avList = map (\x -> av (realToFrac size) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) x) newLst
-    toJson name ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("Manhattan", avList !! 0), ("Manhattan3", avList !! 1), ("Manhattan8", avList !! 2), ("Euclidean", avList !! 3), ("Dijkstra", avList !! 4), ("TemporaryValue", avList !! 5)]
+    toJson name ["name", "timeComplexity", "memoryComplexity", "strokes", "branchDepth", "time", "complexity"] [("Manhattan", newLst !! 0), ("Manhattan3", newLst !! 1), ("Manhattan8", newLst !! 2), ("Euclidean", newLst !! 3), ("Dijkstra", newLst !! 4), ("TemporaryValue", newLst !! 5)]
 
 
 oui :: [String] -> [(Double, Double, Double, Double, Double, Double)] -> [(String, [[(String, String)]])]
@@ -177,22 +194,8 @@ makeBarChart :: Heuristic -> String -> Int -> IO ()
 makeBarChart hf name size = do
     (_, res2) <- parse "MapSolved/Map3x3"
     let allMaps = generateMap 3 size res2
-    let zipped = trace (name ++ ": Generating AStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
-    let zipped2 = trace (name ++ ": Generating AStar3 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
-    let zipped3 = trace (name ++ ": Generating AStar8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
-    let zipped4 = trace (name ++ ":  Generating Multstar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
-    let zipped5 = trace (name ++ ":  Generating AverageStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> ((x + y) `div` 2) ^ 2) hf res2))) allMaps
-    lst  <- foldl benchOnMap initBench zipped
-    lst2 <- foldl benchOnMap initBench zipped2
-    lst3 <- foldl benchOnMap initBench zipped3
-    lst4 <- foldl benchOnMap initBench zipped4
-    lst5 <- foldl benchOnMap initBench zipped5
-    let av1 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
-    let av2 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst2
-    let av3 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst3
-    let av4 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst4
-    let av5 = av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst5
-    let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] [av1, av2, av3, av4, av5]
+    avLst <- generateAverageList hf size allMaps name res2 
+    let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] avLst
     writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
 
 oui2 :: [(String, [(Double, Double)])] -> [[(String, String)]]
@@ -211,27 +214,15 @@ makeDepthGraph hf name = do
     let newActs = Actions.insert (foldl (\tree act -> Actions.insert tree act False) Actions.new acts) moves True
     writeFile name (show newActs)
 
-makeChart :: Heuristic -> String -> Int -> IO [(Double, Double, Double, Double, Double, Double)]
+makeChart :: Heuristic -> String -> Int -> IO (Double, Double, Double, Double, Double, Double)
 makeChart hf name size = do
     makeDepthGraph hf (name ++ "depth.json")
     (_, res2) <- parse "MapSolved/Map3x3"
     let allMaps = generateMap 3 size res2
-    let zipped = trace (name ++ ": Generating AStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (+) hf res2))) allMaps
-    let zipped2 = trace (name ++ ": Generating AStar3 0/" ++ show size)  $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 3 * y) hf res2))) allMaps
-    let zipped3 = trace (name ++ ": Generating AStar8 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> x + 8 * y) hf res2))) allMaps
-    let zipped4 = trace (name ++ ":  Generating Multstar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (*) hf res2))) allMaps
-    let zipped5 = trace (name ++ ":  Generating AverageStar 0/" ++ show size) $ zip (repeat (aStar2 res2 (algorithmFunction (\x y -> ((x + y) `div` 2) ^ 2) hf res2))) allMaps
-    lst  <- foldl benchOnMap initBench zipped
-    lst2 <- foldl benchOnMap initBench zipped2
-    lst3 <- foldl benchOnMap initBench zipped3
-    lst4 <- foldl benchOnMap initBench zipped4
-    lst5 <- foldl benchOnMap initBench zipped5
-    let newLst = zip ["AStar", "AStar3", "AStar8", "MultStar", "AverageStar"] $ map (map (\(_, _, _, _, t, c) -> (t, c))) [lst, lst2, lst3, lst4, lst5]
-    writeFile (name ++ "line.json") $ "[\n" ++ toJson2 (oui2 newLst) ++ "]"
-    let avList = map (\x -> av (realToFrac $ length allMaps) $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) x) [lst, lst2, lst3, lst4, lst5]
-    let ret2 = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] avList
+    avLst <- generateAverageList hf size allMaps name res2
+    let ret2 = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] avLst
     writeFile (name ++ "bar.json") $ "[\n" ++ toJsonV2 ret2 ++ "]"
-    return lst
+    return (av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f))  avLst)
 
 regenerate :: IO ()
 regenerate = do
@@ -241,7 +232,7 @@ regenerate = do
     z3 <- makeChart (wManhattan 8) "docs/manhattan8/" 40
     z4 <- makeChart euclidean "docs/euclidean/" 40
     z6 <- makeChart (wManhattan 99) "docs/tmp/" 40
-    makeAverage (wManhattan 99) [z1, z2, z3, z4, z5, z6]
+    makeAverage (wManhattan 99) [z1, z2, z3, z4, z5, z6] 40
     exitWith ExitSuccess
 
 benchmark :: IO ()
@@ -285,7 +276,7 @@ benchmark = do
                     then makeChart euclidean "docs/euclidean/" 40
                     else (
                         do
-                            makeAverage (wEuclidean nb) []
+                            makeAverage (wEuclidean nb) [] 40
                             makeChart (wEuclidean nb) "docs/tmp/" 40)
                     printChart xs
                 | str == "manhattan"= do
@@ -301,7 +292,7 @@ benchmark = do
                     then makeChart manhattan "docs/manhattan/" 40
                     else (
                         do
-                            makeAverage (wManhattan nb) []
+                            makeAverage (wManhattan nb) [] 40
                             makeChart (wManhattan nb) "docs/tmp/" 40)
                     printChart xs
                 | otherwise = trace("Error Parsing: " ++ x) $ printChart xs

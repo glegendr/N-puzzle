@@ -15,8 +15,8 @@ flags = [
     ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
     ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
-    ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar>")
-    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <parcial>/<1> <all>/<2>")
+    ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar> <averageStar>")
+    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2>")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
@@ -109,13 +109,6 @@ checkFlags (x:xs)
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"
     where eq = splitOn "=" x
-
-checkWeight :: [String] -> Int
-checkWeight [] = 1
-checkWeight (x:x1:xs) = error "multiple equal"
-checkWeight (x:xs)
-    | all isDigit x == True = read x :: Int 
-    | otherwise = error $ "wrong weight found: " ++ x
 
 dispatch :: String -> Heuristic
 dispatch [] = manhattan

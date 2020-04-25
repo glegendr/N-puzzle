@@ -1,5 +1,5 @@
 module Benchmark
-(benchmark, getVFlag, checkWeight) where
+(benchmark, getVFlag) where
 
 import System.Environment
 import Heuristic
@@ -15,6 +15,8 @@ import Debug.Trace
 import Actions
 import Data.List.Split
 import Data.Char
+import Generate (generateMapList)
+import Utils
 
 {--
     [(String, Heuristic)]
@@ -52,21 +54,8 @@ helper = do
     putStrLn $ "Example: ./" ++ name ++ " -b -v=<value> -r\n"
     putStrLn $ "-v --visual <value>\t\t   Allow you to change site datas:\n\t\t\t\t   Example: ./" ++ name ++ " -b -v=\"dijkstra+euclidean+4+manhattan\"\n\t\t\t\t   A new algorithm will generate a new page in the site with all datas"
     putStrLn $ "-r --regenerate\t\t\t   Regenerate all site data"
-    putStrLn $ "-h --help\t\t\t\t    Display this message"
+    putStrLn $ "-h --help\t\t\t   Display this message"
     exitWith ExitSuccess
-
-checkWeight :: [String] -> Int
-checkWeight [] = 1
-checkWeight (x:x1:xs) = error "multiple equal"
-checkWeight (x:xs)
-    | all isDigit x == True = read x :: Int 
-    | otherwise = error $ "wrong weight found: " ++ x
-
-checkHFlag :: [String] -> IO ()
-checkHFlag [] = return ()
-checkHFlag (x:xs)
-    | x == "-h" || x == "--help" = helper
-    | otherwise = checkHFlag xs
 
 checkRFlag :: [String] -> IO ()
 checkRFlag [] = return ()
@@ -153,7 +142,7 @@ generateList lst _ _ _
     | length lst == 6 = return lst
 generateList _ hf name size = do
     (_, res2) <- parse "MapSolved/Map3x3"
-    let allMaps = generateMap 3 size res2
+    let allMaps = generateMapList 3 size res2
     lst <- trace ("Manhattan:") $ generateAverageList manhattan size allMaps name res2
     let av1 = av 5 $ foldl1 (\(acA, acB, acC, acD, acE, acF) (a, b, c, d, e, f) -> (acA + a, acB + b, acC + c, acD + d, acE + e, acF + f)) lst
     lst2 <- trace ("Manhattan3:") $ generateAverageList (wManhattan 3) size allMaps name res2
@@ -193,7 +182,7 @@ oui names lst = oui4 $ oui3 $ oui2 $ map (\(name, lst) -> (name, map (\(name, x)
 makeBarChart :: Heuristic -> String -> Int -> IO ()
 makeBarChart hf name size = do
     (_, res2) <- parse "MapSolved/Map3x3"
-    let allMaps = generateMap 3 size res2
+    let allMaps = generateMapList 3 size res2
     avLst <- generateAverageList hf size allMaps name res2 
     let ret = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] avLst
     writeFile name $ "[\n" ++ toJsonV2 ret ++ "]"
@@ -218,7 +207,7 @@ makeChart :: Heuristic -> String -> Int -> IO (Double, Double, Double, Double, D
 makeChart hf name size = do
     makeDepthGraph hf (name ++ "depth.json")
     (_, res2) <- parse "MapSolved/Map3x3"
-    let allMaps = generateMap 3 size res2
+    let allMaps = generateMapList 3 size res2
     avLst <- generateAverageList hf size allMaps name res2
     let ret2 = oui ["TimeComplexity", "MemoryComplexity", "Strokes", "BranchDepth", "Time", "Complexity"] avLst
     writeFile (name ++ "bar.json") $ "[\n" ++ toJsonV2 ret2 ++ "]"
@@ -238,7 +227,7 @@ regenerate = do
 benchmark :: IO ()
 benchmark = do
     args <- getArgs
-    checkHFlag args
+    checkHFlag args helper
     checkRFlag args
     (_, grill) <- parse "test-files/valids/map-txt"
     (_, grill2) <- parse "test-files/valids/01-map"
@@ -325,6 +314,3 @@ benchOnMap acc (fct, grill) = do
         return ((realToFrac timeC, realToFrac mem, strokes, (foldl (\acc x -> acc + (realToFrac $ length x)) 0 acts) / (realToFrac $ length acts), retTime, strokes * retTime) : y)
 
 initBench = return []
-
-generateMap :: Int -> Int -> Grill -> [Grill]
-generateMap size number res =  take number $  filter (checkGrillBool res) $ map toGrill $ permutations [0..(size^2 - 1)]

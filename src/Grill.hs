@@ -7,7 +7,10 @@ module Grill
 , moveAct
 , printGrill
 , printGrillRes
+, printFileGrill
+, formatFileGrill
 , newGrill
+, newGrillList
 , toGrill
 ) where
 
@@ -42,6 +45,18 @@ printGrill (x:xs) = do
     else return ()
     printGrill xs
     where str = foldl (\acc _  -> acc ++ "----+") "+" x
+
+printFileGrill :: Grill -> IO ()
+printFileGrill grill = putStr $ formatFileGrill grill
+
+formatFileGrill :: Grill -> String
+formatFileGrill [] = []
+formatFileGrill grill = show size ++ "\n" ++ formatGrill grill
+    where
+        size = length grill
+        formatGrill :: Grill -> String
+        formatGrill [] = []
+        formatGrill (x:xs) = foldl (\acc y -> acc ++ show y ++ " ") [] x ++ "\n" ++ formatGrill xs 
 
 printMeRes :: [Int] -> [Int] -> IO ()
 printMeRes [] _ = putStrLn "|"
@@ -119,9 +134,12 @@ moveAct grill act
 toGrill :: [Int] -> Grill
 toGrill tab
     | size /= (fromIntegral $ round size) || size < 3 = error "wrong grill size"
-    | otherwise = newGrill tab $ round size
+    | otherwise = newGrillList tab $ round size
     where size = sqrt $ fromIntegral $ length tab
 
-newGrill :: [Int] -> Int -> Grill
-newGrill [] _ = []
-newGrill tab size = take size tab : newGrill (drop size tab) size
+newGrillList :: [Int] -> Int -> Grill
+newGrillList [] _ = []
+newGrillList tab size = take size tab : newGrillList (drop size tab) size
+
+newGrill :: Int -> Grill
+newGrill size = toGrill [0..(size^2 - 1)]

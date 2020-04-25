@@ -10,14 +10,17 @@ import System.Exit
 import Data.List.Split
 import Data.Char
 import System.Environment
+import Generate
+import Utils
 
 flags = [
-    ("-m", "--map", "<map>\t      /!\\  Mandatory flag: map to solve")
-    ,("-r", "--result", "<map>\t\t   Allow you to give a result map")
-    ,("-f", "--function", "<function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
+    ("-m", "--map", " <map>\t      /!\\  Mandatory flag: map to solve")
+    ,("-r", "--result", " <map>\t\t   Allow you to give a result map")
+    ,("-f", "--function", " <function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar> <averageStar>")
-    ,("-v", "--visual", "<value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2> <animated>/<3>")
+    ,("-v", "--visual", " <value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2> <animated>/<3>")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
+    ,("-g", "--generate", "\t\t\t   Launch puzzle generator. Try -g -h to get help on map generator")
     ,("-h", "--help", "\t\t\t   Display this message")]
 
 getMFlag :: [String] -> IO (Int, Grill)
@@ -30,19 +33,6 @@ getMFlag (x:x1:xs)
 getMFlag (x:xs)
     | head eq == "-m" || head eq == "--map" = parse $ last eq
     | otherwise = error "No map provided"
-    where eq = splitOn "=" x
-
-getRFlag :: [String] -> Int -> IO (Int, Grill)
-getRFlag [] size = parse $ "MapSolved/Map" ++ (show size) ++ "x" ++ (show size)
-getRFlag (x:x1:xs) size 
-    | x == "-r" || x == "--result" = parse x1
-    | head eq == "-r" || head eq == "--result" = parse $ last eq
-    | otherwise = getRFlag (x1:xs) size
-    where eq = splitOn "=" x
-getRFlag (x:xs) size
-    | x == "-r" || x == "--result" = error $ "No map provided after " ++ x ++ " flag"
-    | head eq == "-r" || head eq == "--result" = parse $ last eq
-    | otherwise = getRFlag xs size
     where eq = splitOn "=" x
 
 getFFlag :: [String] -> Heuristic
@@ -98,6 +88,7 @@ checkFlags [] = return ()
 checkFlags (x:x1:xs)
     | x == "-h" || x == "--help" = helper
     | x == "-b" || x == "--benchmark" = benchmark
+    | x == "-g" || x == "--generate" = generate
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags $ x1:xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"
@@ -105,6 +96,7 @@ checkFlags (x:x1:xs)
 checkFlags (x:xs)
     | x == "-h" || x == "--help" = helper
     | x == "-b" || x == "--benchmark" = benchmark
+    | x == "-g" || x == "--generate" = generate
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = error $ "Something is needded after " ++ x ++ " flag"
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"

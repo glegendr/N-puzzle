@@ -23,6 +23,7 @@ If you got multiple time the same flag, only the first one will be use
 |-f|--function|function name|Heuristic function apply||
 |-a|--algorithm|algorithm name|Algorithm function apply||
 |-v|--visual|visual flag|Print N-puzzle's steps||
+|-g|--generate||Launch puzzle generator|
 |-b|--benchmark||Launch benchmarks||
 |-h|--help||Display helper||
 #### Map Flag
@@ -48,7 +49,7 @@ Thanks to [@Kerollmops](https://github.com/Kerollmops) we provided some default 
 #### Result Flag
 ```./N-puzzle -r "pathToMyMap"``` or ```./N-puzzle -r="pathToMyMap"```
 This flag allow you to choose your result map.  
-The map must be valid (same constraints as `-m` flag) and own the same size as incomming map. 
+The map must be valid (same constraints as [Map Flag](#map-Flag)) and own the same size as incomming map. 
 If the flag is not provided, a snail map will be readed that look like:
 ``` txt
 3
@@ -98,6 +99,44 @@ He got 4 differents values:
 |3|animated|Animate the solving's steps|
 
 If the flag is not provided, the `empty` flag is the default value
+#### Generator Flag
+##### All Generator's Flags
+```./N-puzzle -g```    
+This flag provide puzzle generator.   
+The generator flag own his specifics flags as:
+
+|Short|Long|Value|Description|
+|:-:|:-:|:-:|:-:|
+|-s|--size|size|Change puzzle size|
+|-b|--bool|bool|Change puzzle's solvability|
+|-o|--output|path|Change puzzle's output|
+|-r|--result|map|Allow you to choose a puzzle with which the generated puzzle will work|
+|-h|--help||Display helper|  
+
+If you got multiple time the same generator's flag, only the first one will be use
+##### Generator's Size Flag
+```./N-puzzle -g -s size``` or ```./N-puzzle -g -s=size```    
+This flag allow you choose the size of the generated puzzle.   
+The size must be at leat 3.
+##### Generator's Bool Flag
+```./N-puzzle -g -b "Bool"``` or ```./N-puzzle -g -b="Bool"```    
+This flag allow you to choose puzzle's solvability.    
+He got 2 differents values:
+
+|Short|Long|Description|
+|:-:|:-:|:-:|
+|0|False|The puzzle will be unsolvable with result map|
+|1|True|The puzzle will be solvable with result map|
+
+If the flag is not provided, the `True` flag is the default value
+##### Generator's Output Flag
+```./N-puzzle -g -o "path"``` or ```./N-puzzle -g -o="path"```   
+This flag change the output file.   
+If not provided, the puzzle is written in the terminal.
+##### Generator's Result Flag
+```./N-puzzle -g -r "map"``` or ```./N-puzzle -g -r="map"```
+This flag allow you to choose a puzzle with which the generated puzzle will work or not, depending of [Generator's Bool Flag](#generator's-Bool-Flag).     
+As same as [Result Flag](#result-Flag), the map must be valid.    
 #### Benchmark Flag
 ##### All Benchmark's Flags
 ```./N-puzzle -b```   

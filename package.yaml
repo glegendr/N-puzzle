@@ -27,6 +27,8 @@ dependencies:
 - ansi-terminal
 - rainbow
 - text
+- bytestring
+- hashable
 
 library:
   source-dirs: src

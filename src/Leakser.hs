@@ -12,13 +12,15 @@ import Data.Char
 import System.Environment
 import Generate
 import Utils
+import Actions
 
 flags = [
     ("-m", "--map", " <map>\t      /!\\  Mandatory flag: map to solve")
     ,("-r", "--result", " <map>\t\t   Allow you to give a result map")
     ,("-f", "--function", " <function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar> <averageStar>")
-    ,("-v", "--visual", " <value>\t\t   Print all N-puzzle's steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2> <animated>/<3>")
+    ,("-v", "--visual", " <value>\t\t   Print steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2> <animated>/<3>")
+    ,("-i", "--inverse", " <moves>\t\t   Reverse the process, you now give a list of moves, and we tell if the puzzle is sorted or not")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
     ,("-g", "--generate", "\t\t\t   Launch puzzle generator. Try -g -h to get help on map generator")
     ,("-h", "--help", "\t\t\t   Display this message")]
@@ -61,13 +63,26 @@ getAFlag (x:xs)
     | otherwise = getAFlag xs
     where eq = splitOn "=" x
 
-leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String)
+getIFlag :: [String] -> [Act]
+getIFlag [] = []
+getIFlag (x:x1:xs) 
+    | x == "-i" || x == "--inverse" = checkActs [x1]
+    | head eq == "-i" || head eq == "--inverse" = checkActs $ tail eq
+    | otherwise = getIFlag (x1:xs)
+    where eq = splitOn "=" x
+getIFlag (x:xs)
+    | x == "-i" || x == "--inverse" = error $ "No List provided after " ++ x ++ " flag"
+    | head eq == "-i" || head eq == "--inverse" = checkActs $ tail eq
+    | otherwise = getIFlag xs
+    where eq = splitOn "=" x
+
+leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String, [Act])
 leakser lst = do
     (size, m) <- getMFlag lst
     (size2, r) <- getRFlag lst size
     if size /= size2
     then  error "Not same size between given map and result map"
-    else return (m, r, getFFlag lst, getAFlag lst, getVFlag lst)
+    else return (m, r, getFFlag lst, getAFlag lst, getVFlag lst, getIFlag lst)
  
 helper :: IO ()
 helper = do

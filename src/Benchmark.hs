@@ -74,7 +74,7 @@ createData (x:xs) lst grill res str = (mergeData x lst grill res str) ++ (create
 printBench :: Show(a) => [((String, String, String), a)] -> IO ()
 printBench [] = return ()
 printBench (((n1, n2, n3), x):xs) = do
-    printf "%-10s%-15s%-8s -> " n1 n2 n3
+    printf "%-15s%-15s%-8s -> " n1 n2 n3
     print x
     printBench xs
 
@@ -265,7 +265,7 @@ benchmark = do
                     then makeChart euclidean "docs/euclidean/" 40
                     else (
                         do
-                            makeAverage (wEuclidean nb) [] 40
+                            makeAverage (wEuclidean nb) [] 1
                             makeChart (wEuclidean nb) "docs/tmp/" 40)
                     printChart xs
                 | str == "manhattan"= do

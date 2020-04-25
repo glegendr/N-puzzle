@@ -23,6 +23,7 @@ If you got multiple time the same flag, only the first one will be use
 |-f|--function|function name|Heuristic function apply||
 |-a|--algorithm|algorithm name|Algorithm function apply||
 |-v|--visual|visual flag|Print N-puzzle's steps||
+|-i|--inverse|moves|Reverse the process||
 |-g|--generate||Launch puzzle generator|
 |-b|--benchmark||Launch benchmarks||
 |-h|--help||Display helper||
@@ -95,10 +96,27 @@ He got 4 differents values:
 |:-:|:-:|:-:|
 |0|empty|Don't print any steps|
 |1|partial|Only print the incoming map and return map|
-|2|all|Print every solving's steps|
-|3|animated|Animate the solving's steps|
+|2|all|Print each steps|
+|3|animated|Animate each steps|
 
 If the flag is not provided, the `empty` flag is the default value
+#### Inverse Flag
+```./N-puzzle -i MoveList``` or ```./N-puzzle -i=MoveList```     
+This flag reverse the process, the program execute your moves and compare the final puzzle with the expected result.   
+The start map is given by [Map Flag](#map-flag) and the result map by [Result Flag](#result-Flag).    
+A list of move looks like `[Long,Long,Long]` or `shortshortshort` as:    
+`[Down,Left,Left,Up,Up,Right]` is the same as `DLLUUR`.   
+All the actions are listed here:   
+|Short|Long|Description|
+|:-:|:-:|:-:|
+|L|Left||
+|U|Up||
+|R|Right||
+|D|Down||
+|N|None|Do nothing|
+
+If a given move is not recognized, he is replaced by `None` and will be skipped.   
+You can give a [visual flag](#visual-flag) to display steps or not
 #### Generator Flag
 ##### All Generator's Flags
 ```./N-puzzle -g```    
@@ -135,7 +153,7 @@ This flag change the output file.
 If not provided, the puzzle is written in the terminal.
 ##### Generator's Result Flag
 ```./N-puzzle -g -r "map"``` or ```./N-puzzle -g -r="map"```
-This flag allow you to choose a puzzle with which the generated puzzle will work or not, depending of [Generator's Bool Flag](#generator's-Bool-Flag).     
+This flag allow you to choose a puzzle with which the generated puzzle will work or not, depending of [Generator's Bool Flag](#generators-Bool-Flag).     
 As same as [Result Flag](#result-Flag), the map must be valid.    
 #### Benchmark Flag
 ##### All Benchmark's Flags

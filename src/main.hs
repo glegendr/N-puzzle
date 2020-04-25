@@ -8,11 +8,29 @@ import Benchmark
 import Actions
 import System.Console.ANSI
 import Control.Concurrent
--- import Debug.Trace
+import System.Exit
 
 isThatReal :: Grill -> Grill -> [Act] -> Bool
-isThatReal grill res [] = grill == res
-isThatReal grill res (x:xs) = isThatReal (moveAct grill x) res xs
+isThatReal grill res act = doSteps grill act == res
+
+doSteps :: Grill -> [Act] -> Grill
+doSteps grill [] = grill
+doSteps grill (x:xs) = doSteps (moveAct grill x) xs
+
+inverse :: Grill -> Grill -> [Act] -> String -> IO ()
+inverse grill res [] _ = exitWith ExitSuccess
+inverse grill res act v = do
+    printVisu grill res v act
+    let end = doSteps grill act 
+    if (end == res)
+    then putStrLn "The List is solving the puzzle"
+    else (
+        do
+            putStrLn "The List is not solving the puzzle\nExpected:"
+            printGrill res
+            putStrLn "Got:"
+            printGrillRes2 end res)
+    exitWith ExitSuccess
 
 main = do
     args <- getArgs
@@ -20,16 +38,19 @@ main = do
     then helper
     else return ()
     checkFlags args
-    (grill, res, hf, af, visu) <- leakser args
+    (grill, res, hf, af, visu, m) <- leakser args
+    if (m /= [])
+    then inverse grill res m visu
+    else return () 
     checkGrill grill res
     let (moves, acts, time, mem) = aStarBench grill res (algorithmFunction af hf res)
     let newActs = Actions.insert (foldl (\tree act -> Actions.insert tree act False) Actions.new acts) moves True
     printVisu grill res visu $ reverse moves
-    -- writeFile "docs/oui.json" (show newActs)
     putStrLn $ "Time Complexity: " ++ (show time)
     putStrLn $ "Memory Complexity: " ++ (show mem)
     putStrLn $ "Number of moves: " ++ (show (length moves))
     putStrLn $ "Moves: " ++ (show $ reverse moves)
+    putStrLn $ "Reduce Moves: " ++ (map toSingleLetter $ reverse moves)
 
 printVisu :: Grill -> Grill -> String -> [Act] -> IO ()
 printVisu grill res visu act

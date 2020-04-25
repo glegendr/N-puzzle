@@ -7,6 +7,7 @@ module Grill
 , moveAct
 , printGrill
 , printGrillRes
+, printGrillRes2
 , printFileGrill
 , formatFileGrill
 , newGrill
@@ -92,6 +93,40 @@ printGrillRes (x:xs) (y:ys) = do
     printGrillRes xs ys
     where str = foldl (\acc _  -> acc ++ "----+") "+" x
 
+printMeRes2 :: [Int] -> [Int] -> IO ()
+printMeRes2 [] _ = putStrLn "|"
+printMeRes2 (x:xs) (y:ys)
+    | x == 0 = do
+        putStr "|    "
+        printMeRes2 xs ys
+    | x < 10 && x == y = do
+        putStr $ "|  " ++ show x ++ " "
+        printMeRes2 xs ys
+    | x < 10 = do
+        putStr $ "|  "
+        putChunk $ (chunk $ pack $ show x) & fore red & bold
+        putStr " "
+        printMeRes2 xs ys
+    | x /= y = do
+        putStr $ "| "
+        putChunk $ (chunk $ pack $ show x) & fore red & bold
+        putStr " "
+        printMeRes2 xs ys
+    | otherwise = do
+        putStr $ "| " ++ show x ++ " "
+        printMeRes2 xs ys
+
+printGrillRes2 :: Grill -> Grill -> IO ()
+printGrillRes2 [] _ = return ()
+printGrillRes2 (x:xs) (y:ys) = do
+    putStrLn str
+    printMeRes2 x y
+    if xs == []
+    then putStrLn str
+    else return ()
+    printGrillRes2 xs ys
+    where str = foldl (\acc _  -> acc ++ "----+") "+" x
+
 moveRight :: Grill -> Grill
 moveRight [] = []
 moveRight (x:xs)
@@ -130,6 +165,7 @@ moveAct grill act
     | act == ActUp = moveUp grill
     | act == ActRight = moveRight grill
     | act == ActDown = moveDown grill
+    | otherwise = grill
 
 toGrill :: [Int] -> Grill
 toGrill tab

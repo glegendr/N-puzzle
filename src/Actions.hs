@@ -4,9 +4,13 @@ module Actions
 , singleton
 , new
 , insert
+, fromString
+, fromList
+, toSingleLetter
 ) where
 
-import Data.List(intercalate)
+import Data.List (intercalate)
+import Data.Char (toLower)
 
 data Act = ActLeft | ActUp | ActRight | ActDown | ActNone deriving (Eq, Ord)
 instance Show Act where
@@ -68,3 +72,23 @@ insert (Node n depth _ left up right down) (act:xs) finish
     | act == ActDown                           = Node n depth finish left up right (insert (singleton act (depth + 1) finish) xs finish)
     | act == ActNone                           = Node n depth finish left up right down
 insert (Leaf depth) (act:xs) finish = insert (singleton act (depth + 1) finish) xs finish
+
+fromString :: String -> Act
+fromString x
+    | str == "left" || str == "actleft" || str == "l" = ActLeft
+    | str == "up" || str == "actup" || str == "u" = ActUp
+    | str == "right" || str == "actright" || str == "r" = ActRight
+    | str == "down" || str == "actdown" || str == "d" = ActDown
+    | otherwise = ActNone
+    where str = map toLower x
+
+fromList :: [String] -> [Act]
+fromList lst = map fromString lst
+
+toSingleLetter :: Act -> Char
+toSingleLetter x
+    | x == ActLeft  = 'L'
+    | x == ActUp    = 'U'
+    | x == ActRight = 'R'
+    | x == ActDown  = 'D'
+    | otherwise     = 'N'

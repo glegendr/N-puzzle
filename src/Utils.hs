@@ -1,9 +1,11 @@
 module Utils
-(checkWeight, checkBool, getRFlag, checkHFlag, checkString) where
+(checkWeight, checkBool, checkActs, getRFlag, checkHFlag, checkString) where
 
 import Data.Char
 import Parsing
 import Data.List.Split
+import Data.List
+import Actions
 
 checkWeight :: [String] -> Int
 checkWeight [] = 1
@@ -26,6 +28,13 @@ checkBool (x:[])
     | otherwise = error $ "wrong boolean found: " ++ x
     where str = map toLower x
 checkBool _ = error "multiple equal"
+
+checkActs :: [String] -> [Act]
+checkActs [] = []
+checkActs (x:[])
+    | x !! 0 == '[' = fromList $ splitOn "," $ tail $ init x
+    | otherwise = fromList $ map (\y -> [y]) x
+checkActs _ = error "multiple equal"
 
 getRFlag :: [String] -> Int -> IO (Int, [[Int]])
 getRFlag [] size = parse $ "MapSolved/Map" ++ (show size) ++ "x" ++ (show size)

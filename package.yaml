@@ -24,6 +24,9 @@ dependencies:
 - time
 - deepseq
 - split
+- ansi-terminal
+- rainbow
+- text
 
 library:
   source-dirs: src

@@ -6,6 +6,8 @@ import Algo
 import Parsing(checkGrill)
 import Benchmark
 import Actions
+import System.Console.ANSI
+import Control.Concurrent
 -- import Debug.Trace
 
 isThatReal :: Grill -> Grill -> [Act] -> Bool
@@ -37,13 +39,24 @@ printVisu grill res visu act
         putStrLn ""
         printGrill res
         putStrLn ""
-    | visu == "2" || visu == "all" = putMoves grill act
+    | visu == "2" || visu == "all" = putMoves (length act) False grill act res
+    | visu == "3" || visu == "animated" = putMoves (length act) True grill act res
     | otherwise = return ()
 
-putMoves :: Grill -> [Act] -> IO ()
-putMoves _ [] = return ()
-putMoves grill (x:xs) = do
-    printGrill newGrill
-    putStrLn ""
-    putMoves newGrill xs
+putMoves :: Int -> Bool -> Grill -> [Act] -> Grill -> IO ()
+putMoves _ True grill [] _ = putStrLn $ replicate (length grill * 2 + 1) '\n'
+putMoves _ _ _ [] _ = return ()
+putMoves nbMoves animated grill (x:xs) res
+    | animated == True = do
+        printGrillRes newGrill res
+        putStrLn ""
+        putStrLn $ "Move: " ++ show (nbMoves - length xs) ++ "/" ++ show nbMoves ++ "    "
+        putStrLn $ "Current Move: " ++ show x ++ "    "
+        cursorUpLine $ (length grill) * 2 + 4
+        threadDelay 200000
+        putMoves nbMoves animated newGrill xs res
+    | otherwise =  do
+        printGrill newGrill
+        putStrLn ""
+        putMoves nbMoves animated newGrill xs res
     where newGrill = moveAct grill x

@@ -6,24 +6,30 @@ module Grill
 , moveDown
 , moveAct
 , printGrill
+, printGrillRes
 , newGrill
 , toGrill
 ) where
 
-import Text.Printf
+import Rainbow
+import Data.Function ((&))
 import Data.List
 import Actions
+import Data.Text (pack)
 
 type Grill = [[Int]]
 
 printMe :: [Int] -> IO ()
 printMe [] = putStrLn "|"
 printMe (x:xs)
+    | x == 0 = do
+        putStr "|    "
+        printMe xs
     | x < 10 = do
-        printf "|  %i " x
+        putStr $ "|  " ++ show x ++ " "
         printMe xs
     | otherwise = do
-        printf "| %i " x
+        putStr $ "| " ++ show x ++ " "
         printMe xs
 
 printGrill :: Grill -> IO ()
@@ -35,6 +41,40 @@ printGrill (x:xs) = do
     then putStrLn str
     else return ()
     printGrill xs
+    where str = foldl (\acc _  -> acc ++ "----+") "+" x
+
+printMeRes :: [Int] -> [Int] -> IO ()
+printMeRes [] _ = putStrLn "|"
+printMeRes (x:xs) (y:ys)
+    | x == 0 = do
+        putStr "|    "
+        printMeRes xs ys
+    | x < 10 && x /= y = do
+        putStr $ "|  " ++ show x ++ " "
+        printMeRes xs ys
+    | x < 10 = do
+        putStr $ "|  "
+        putChunk $ (chunk $ pack $ show x) & fore green & bold
+        putStr " "
+        printMeRes xs ys
+    | x == y = do
+        putStr $ "| "
+        putChunk $ (chunk $ pack $ show x) & fore green & bold
+        putStr " "
+        printMeRes xs ys
+    | otherwise = do
+        putStr $ "| " ++ show x ++ " "
+        printMeRes xs ys
+
+printGrillRes :: Grill -> Grill -> IO ()
+printGrillRes [] _ = return ()
+printGrillRes (x:xs) (y:ys) = do
+    putStrLn str
+    printMeRes x y
+    if xs == []
+    then putStrLn str
+    else return ()
+    printGrillRes xs ys
     where str = foldl (\acc _  -> acc ++ "----+") "+" x
 
 moveRight :: Grill -> Grill

@@ -89,14 +89,15 @@ This example will use `aStar` and weight it by 3
 #### Visual Flag
 ```./N-puzzle -v "visualValue"``` or ```./N-puzzle -v="visualValue"```    
 The visual flag allow you to choose if you want to print solving's steps or not.  
-He got 3 differents values:   
+He got 4 differents values:   
 |Short|Long|Description|
 |:-:|:-:|:-:|
 |0|empty|Don't print any steps|
 |1|partial|Only print the incoming map and return map|
 |2|all|Print every solving's steps|
+|3|animated|Animate the solving's steps|
 
-If the flag is not provided, the `partial` flag is the default value
+If the flag is not provided, the `empty` flag is the default value
 #### Benchmark Flag
 ##### All Benchmark's Flags
 ```./N-puzzle -b```   

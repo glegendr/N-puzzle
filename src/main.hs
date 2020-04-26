@@ -9,6 +9,7 @@ import Actions
 import System.Console.ANSI
 import Control.Concurrent
 import System.Exit
+import Data.Char
 
 isThatReal :: Grill -> Grill -> [Act] -> Bool
 isThatReal grill res act = doSteps grill act == res
@@ -17,20 +18,55 @@ doSteps :: Grill -> [Act] -> Grill
 doSteps grill [] = grill
 doSteps grill (x:xs) = doSteps (moveAct grill x) xs
 
-inverse :: Grill -> Grill -> [Act] -> String -> IO ()
-inverse grill res [] _ = exitWith ExitSuccess
-inverse grill res act v = do
-    printVisu grill res v act
-    let end = doSteps grill act 
-    if (end == res)
-    then putStrLn "The List is solving the puzzle"
-    else (
-        do
-            putStrLn "The List is not solving the puzzle\nExpected:"
-            printGrill res
-            putStrLn "Got:"
-            printGrillRes2 end res)
-    exitWith ExitSuccess
+interactive_help :: IO ()
+interactive_help = do
+    putStrLn "Give us an action as:\n<Left>/<L> <Up>/<U> <Right>/<R> <Down>/<D>\nOr a command like:\n<quit> <help>"
+    return ()
+
+getActFromUser :: IO Act
+getActFromUser = do
+    putStrLn "Give your move: "  
+    l <- getLine
+    matchMove l
+    where
+        matchMove :: String -> IO Act
+        matchMove x
+            | str == "quit" = exitWith ExitSuccess
+            | str == "help" = do
+                interactive_help
+                getActFromUser
+            | otherwise = return $ fromString str
+            where str = map toLower x  
+
+inverse :: Grill -> Grill -> [Act] -> String -> Int -> IO ()
+inverse grill res act v strokes
+    | strokes == 0 && act /= [] =  do
+        printVisu grill res v act
+        let end = doSteps grill act 
+        if (end == res)
+        then putStrLn "The List is solving the puzzle"
+        else (
+            do
+                putStrLn "The List is not solving the puzzle\nExpected:"
+                printGrill res
+                putStrLn "Got:"
+                printGrillRes2 end res)
+        exitWith ExitSuccess
+    | strokes == 0 = do
+        putStrLn ""
+        printGrill res
+        printGrillRes grill res
+        inverse grill res [] v 1
+    | grill == res = do
+        putStrLn $ "Bravo !\nNumber of moves: " ++ show (strokes - 1) ++ "\nMoves: " ++ (show $ reverse act) ++ "\nReduce Moves: " ++  (map toSingleLetter $ reverse act)
+        exitWith ExitSuccess
+    | otherwise = do
+        newAct <- getActFromUser
+        printGrill res
+        let newGrill = moveAct grill newAct
+        printGrillRes newGrill res
+        putStrLn $ "Strokes: " ++ show strokes
+        inverse newGrill res (newAct:act) v (strokes + 1)
 
 main = do
     args <- getArgs
@@ -38,9 +74,9 @@ main = do
     then helper
     else return ()
     checkFlags args
-    (grill, res, hf, af, visu, m) <- leakser args
-    if (m /= [])
-    then inverse grill res m visu
+    (grill, res, hf, af, visu, (b, m)) <- leakser args
+    if (b == True)
+    then inverse grill res m visu 0
     else return () 
     checkGrill grill res
     let (moves, acts, time, mem) = aStarBench grill res (algorithmFunction af hf res)

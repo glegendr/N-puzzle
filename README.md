@@ -115,6 +115,10 @@ All the actions are listed here:
 |D|Down||
 |N|None|Do nothing|
 
+If no value is provided, launch interactiv mode.    
+This mode wait user's move and apply it to your map.   
+You also can give `help` to get help or `quit` to quit interactiv mode.   
+
 If a given move is not recognized, he is replaced by `None` and will be skipped.   
 You can give a [visual flag](#visual-flag) to display steps or not
 #### Generator Flag

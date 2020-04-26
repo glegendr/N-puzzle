@@ -32,6 +32,7 @@ checkBool _ = error "multiple equal"
 checkActs :: [String] -> [Act]
 checkActs [] = []
 checkActs (x:[])
+    | x !! 0 == '-' = []
     | x !! 0 == '[' = fromList $ splitOn "," $ tail $ init x
     | otherwise = fromList $ map (\y -> [y]) x
 checkActs _ = error "multiple equal"

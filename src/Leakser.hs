@@ -20,7 +20,7 @@ flags = [
     ,("-f", "--function", " <function name>\t   Allow you to change your heuristic function as:\n\t\t\t\t   <manhattan> <wManhattan->weight> <euclidean> <wEuclidean->weight> <dijkstra>")
     ,("-a", "--algorithm", "<algorythm name>\t   Allow you to change your search function as:\n\t\t\t\t   <aStar> <wAStar->weight> <minimizedAStar> <multStar> <averageStar>")
     ,("-v", "--visual", " <value>\t\t   Print steps:\n\t\t\t\t   <empty>/<0> <partial>/<1> <all>/<2> <animated>/<3>")
-    ,("-i", "--inverse", " <moves>\t\t   Reverse the process, you now give a list of moves, and we tell if the puzzle is sorted or not")
+    ,("-i", "--inverse", " <moves>\t\t   Reverse the process, you now give a list of moves, and we tell if the puzzle is sorted or not. If no value is provided, launch interactiv mode")
     ,("-b", "--benchmark","\t\t\t   Launch benchmarks. Try -b -h to get help on benchmarks")
     ,("-g", "--generate", "\t\t\t   Launch puzzle generator. Try -g -h to get help on map generator")
     ,("-h", "--help", "\t\t\t   Display this message")]
@@ -63,20 +63,20 @@ getAFlag (x:xs)
     | otherwise = getAFlag xs
     where eq = splitOn "=" x
 
-getIFlag :: [String] -> [Act]
-getIFlag [] = []
+getIFlag :: [String] -> (Bool, [Act])
+getIFlag [] = (False, [])
 getIFlag (x:x1:xs) 
-    | x == "-i" || x == "--inverse" = checkActs [x1]
-    | head eq == "-i" || head eq == "--inverse" = checkActs $ tail eq
+    | x == "-i" || x == "--inverse" = (True, checkActs [x1])
+    | head eq == "-i" || head eq == "--inverse" = (True, checkActs $ tail eq)
     | otherwise = getIFlag (x1:xs)
     where eq = splitOn "=" x
 getIFlag (x:xs)
-    | x == "-i" || x == "--inverse" = error $ "No List provided after " ++ x ++ " flag"
-    | head eq == "-i" || head eq == "--inverse" = checkActs $ tail eq
+    | x == "-i" || x == "--inverse" = (True, [])
+    | head eq == "-i" || head eq == "--inverse" = (True, checkActs $ tail eq)
     | otherwise = getIFlag xs
     where eq = splitOn "=" x
 
-leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String, [Act])
+leakser :: [String] -> IO (Grill, Grill, Heuristic, (Int -> Int -> Int), String, (Bool, [Act]))
 leakser lst = do
     (size, m) <- getMFlag lst
     (size2, r) <- getRFlag lst size
@@ -104,6 +104,7 @@ checkFlags (x:x1:xs)
     | x == "-h" || x == "--help" = helper
     | x == "-b" || x == "--benchmark" = benchmark
     | x == "-g" || x == "--generate" = generate
+    | (x == "-i" || x == "--inverse") && x1 `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags $ x1:xs
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags $ x1:xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"
@@ -112,6 +113,7 @@ checkFlags (x:xs)
     | x == "-h" || x == "--help" = helper
     | x == "-b" || x == "--benchmark" = benchmark
     | x == "-g" || x == "--generate" = generate
+    | x == "-i" || x == "--inverse" = checkFlags xs
     | x `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = error $ "Something is needded after " ++ x ++ " flag"
     | head eq `elem` (foldl (\acc (fs, sc, _) -> acc ++ [fs, sc]) [] flags) = checkFlags xs
     | otherwise = error $ "Flag " ++ x ++ " doesn't exist"

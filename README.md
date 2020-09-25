@@ -98,6 +98,9 @@ He got 4 differents values:
 |2|all|Print each steps|
 |3|animated|Animate each steps|
 
+Here is a exaple of animated solve.    
+![](docs/n-puzzle.gif)
+
 If the flag is not provided, the `empty` flag is the default value
 ### Inverse Flag
 ```./N-puzzle -i MoveList``` or ```./N-puzzle -i=MoveList```     

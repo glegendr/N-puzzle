@@ -1,18 +1,17 @@
 # N-puzzle
 ## Chart
 A site as been created to see charts in `docs` folder.  
-Launch the site with ```python3 data.py``` and visit http://localhost:8000   
+Launch the site with ```python3 docs/data.py``` and visit http://localhost:8000   
 or simply visit https://glegendr.github.io/N-puzzle. 
 ## Dependencies
 The only dependencies you need are haskell and stack.  
 To get them, check https://www.haskell.org/platform/ 
 ## Project
 To start the project use:  
-``` git clone https://github.com/glegendr/N-puzzle.git; cd N-puzzle; sh compile.sh ```  
-You will get a binary call `N-puzzle`
+```git clone https://github.com/glegendr/N-puzzle.git; cd N-puzzle; stack build; stack exec N-Puzzle -- MapSolved/Map3x3```   
 ## Flags
 ### All Flags
-```./N-puzzle <flags>```   
+```stack exec N-Puzzle -- <flags>```   
 If you got multiple time the same flag, only the first one will be use
 
 |Short|Long|Value|Description|Mandatory|
@@ -27,7 +26,7 @@ If you got multiple time the same flag, only the first one will be use
 |-b|--benchmark||Launch benchmarks||
 |-h|--help||Display helper||
 ### Map Flag
-```./N-puzzle -m "pathToMyMap"``` or ```./N-puzzle -m="pathToMyMap"```  
+```stack exec N-Puzzle -- -m "pathToMyMap"``` or ```stack exec N-Puzzle -- -m="pathToMyMap"```  
 This mandatory flag allow you to choose your incomming map.  
 A valid map look like:   
 ``` txt
@@ -47,7 +46,7 @@ Your map can have:
 
 Thanks to [@Kerollmops](https://github.com/Kerollmops) we provided some default map `test-files/valids/`
 ### Result Flag
-```./N-puzzle -r "pathToMyMap"``` or ```./N-puzzle -r="pathToMyMap"```
+```stack exec N-Puzzle -- -r "pathToMyMap"``` or ```stack exec N-Puzzle -- -r="pathToMyMap"```
 This flag allow you to choose your result map.  
 The map must be valid (same constraints as [Map Flag](#map-Flag)) and own the same size as incomming map. 
 If the flag is not provided, a snail map will be readed that look like:
@@ -60,7 +59,7 @@ If the flag is not provided, a snail map will be readed that look like:
 The default map is up to 6. If you are solving map larger than 6, you must provide a result map.  
 We provided some default map `MapSolved/`
 ### Function Flag
-```./N-puzzle -f "functionName"``` or ```./N-puzzle -f="functionName"```   
+```stack exec N-Puzzle -- -f "functionName"``` or ```stack exec N-Puzzle -- -f="functionName"```   
 The differents heuristic functions are:
 
 |Name|Value|Description|
@@ -74,7 +73,7 @@ The differents heuristic functions are:
 To give a weight to a function, use `->` like `-f "wManhattan->3"`.  
 This example will use `manhattan` and weight it by 3
 ### Algorithm Flag
-```./N-puzzle -a "algorithmName"``` or ```./N-puzzle -a="algorithmName"```    
+```stack exec N-Puzzle -- -a "algorithmName"``` or ```stack exec N-Puzzle -- -a="algorithmName"```    
 The differents algorithms are:
 
 |Name|Value|Description|
@@ -88,7 +87,7 @@ The differents algorithms are:
 To give a weight to an algorithm, use `->` like `-a "wAstar->3"`.  
 This example will use `aStar` and weight it by 3
 ### Visual Flag
-```./N-puzzle -v "visualValue"``` or ```./N-puzzle -v="visualValue"```    
+```stack exec N-Puzzle -- -v "visualValue"``` or ```stack exec N-Puzzle -- -v="visualValue"```    
 The visual flag allow you to choose if you want to print solving's steps or not.  
 He got 4 differents values:   
 |Short|Long|Description|
@@ -103,7 +102,7 @@ Here is an example of an animated solution.
 
 If the flag is not provided, the `empty` flag is the default value
 ### Inverse Flag
-```./N-puzzle -i MoveList``` or ```./N-puzzle -i=MoveList```     
+```stack exec N-Puzzle -- -i MoveList``` or ```stack exec N-Puzzle -- -i=MoveList```     
 This flag reverse the process, the program execute your moves and compare the final puzzle with the expected result.   
 The start map is given by [Map Flag](#map-flag) and the result map by [Result Flag](#result-Flag).    
 A list of move looks like `[Long,Long,Long]` or `shortshortshort` as:    
@@ -125,7 +124,7 @@ If a given move is not recognized, he is replaced by `None` and will be skipped.
 You can give a [visual flag](#visual-flag) to display steps or not
 ### Generator Flag
 #### All Generator's Flags
-```./N-puzzle -g```    
+```stack exec N-Puzzle -- -g```    
 This flag provide puzzle generator.   
 The generator flag own his specifics flags as:
 
@@ -139,11 +138,11 @@ The generator flag own his specifics flags as:
 
 If you got multiple time the same generator's flag, only the first one will be use
 #### Generator's Size Flag
-```./N-puzzle -g -s size``` or ```./N-puzzle -g -s=size```    
+```stack exec N-Puzzle -- -g -s size``` or ```stack exec N-Puzzle -- -g -s=size```    
 This flag allow you choose the size of the generated puzzle.   
 The size must be at leat 3.
 #### Generator's Bool Flag
-```./N-puzzle -g -b "Bool"``` or ```./N-puzzle -g -b="Bool"```    
+```stack exec N-Puzzle -- -g -b "Bool"``` or ```stack exec N-Puzzle -- -g -b="Bool"```    
 This flag allow you to choose puzzle's solvability.    
 He got 2 differents values:
 
@@ -154,16 +153,16 @@ He got 2 differents values:
 
 If the flag is not provided, the `True` flag is the default value
 #### Generator's Output Flag
-```./N-puzzle -g -o "path"``` or ```./N-puzzle -g -o="path"```   
+```stack exec N-Puzzle -- -g -o "path"``` or ```stack exec N-Puzzle -- -g -o="path"```   
 This flag change the output file.   
 If not provided, the puzzle is written in the terminal.
 #### Generator's Result Flag
-```./N-puzzle -g -r "map"``` or ```./N-puzzle -g -r="map"```
+```stack exec N-Puzzle -- -g -r "map"``` or ```stack exec N-Puzzle -- -g -r="map"```
 This flag allow you to choose a puzzle with which the generated puzzle will work or not, depending of [Generator's Bool Flag](#generators-Bool-Flag).     
 As same as [Result Flag](#result-Flag), the map must be valid.    
 ### Benchmark Flag
 #### All Benchmark's Flags
-```./N-puzzle -b```   
+```stack exec N-Puzzle -- -b```   
 This flag provide simple benchmarks and chart generating.
 The benchmark flag own his specifics flags as:
 
@@ -175,14 +174,14 @@ The benchmark flag own his specifics flags as:
 
 If you got multiple time the same benchmark's flag, only the first one will be use
 #### Benchmark's Visual Flag
-```./N-puzzle -b -v "visualValue"``` or ```./N-puzzle -b -v="visualValue"```   
+```stack exec N-Puzzle -- -b -v "visualValue"``` or ```stack exec N-Puzzle -- -b -v="visualValue"```   
 This flag allow you to generate site's chart.   
 The visual values are the same as [Algorithm Flag](#algorithm-Flag).   
 You can generate multiple chart separating all the algorithm with `+` delimiter `-v="dijkstra+wManhattan->4+euclidean"`   
 If an algorithm is not in the base site, he will replace the `Temporary Value`.   
 Theses change are only availables in `localhost`
 #### Benchmark's Regenerate Flag
-```./N-puzzle -b -r```   
+```stack exec N-Puzzle -- -b -r```   
 This flag will regenerate all json used in the site.   
 The `Temporay Value` will be replaced by a `Manhattan 99`
 ## Authors

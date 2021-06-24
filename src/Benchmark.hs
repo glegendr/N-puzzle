@@ -52,7 +52,7 @@ helper :: IO ()
 helper = do
     name <- getProgName
     putStrLn $ "Example: ./" ++ name ++ " -b -v=<value> -r\n"
-    putStrLn $ "-v --visual <value>\t\t   Allow you to change site datas:\n\t\t\t\t   Example: ./" ++ name ++ " -b -v=\"dijkstra+euclidean+4+manhattan\"\n\t\t\t\t   A new algorithm will generate a new page in the site with all datas"
+    putStrLn $ "-v --visual <value>\t\t   Allow you to change site datas:\n\t\t\t\t   Example: ./" ++ name ++ " -b -v=\"dijkstra+wEuclidean->4+manhattan\"\n\t\t\t\t   A new algorithm will generate a new page in the site with all datas"
     putStrLn $ "-r --regenerate\t\t\t   Regenerate all site data"
     putStrLn $ "-h --help\t\t\t   Display this message"
     exitWith ExitSuccess

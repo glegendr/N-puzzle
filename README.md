@@ -8,7 +8,7 @@ The only dependencies you need are haskell and stack.
 To get them, check https://www.haskell.org/platform/ 
 ## Project
 To start the project use:  
-```git clone https://github.com/glegendr/N-puzzle.git; cd N-puzzle; stack build; stack exec N-Puzzle -- MapSolved/Map3x3```   
+```git clone https://github.com/glegendr/N-puzzle.git; cd N-puzzle; stack build; stack exec N-Puzzle -- -m MapSolved/Map3x3```   
 ## Flags
 ### All Flags
 ```stack exec N-Puzzle -- <flags>```   

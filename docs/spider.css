@@ -38,6 +38,7 @@ p {
   align-items: center;
   background: #A49A87;
   width: 75%;
+  overflow: scroll;
 }
 
 .col--title {
@@ -48,6 +49,7 @@ p {
   list-style: none;
   margin: 0;
   padding: 0;
+  overflow: scroll;
 }
 .menu li {
   width: 100%;
